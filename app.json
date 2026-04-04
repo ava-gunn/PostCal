@@ -1,15 +1,18 @@
 {
   "expo": {
-    "name": "ig-events",
-    "slug": "ig-events",
+    "name": "PostCal",
+    "slug": "PostCal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "igevents",
-    "userInterfaceStyle": "automatic",
+    "scheme": "postcal",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.postcal.app",
+      "infoPlist": {
+        "MinimumOSVersion": "16.0"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +22,14 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "minSdkVersion": 24,
+      "permissions": [
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
+      ],
+      "package": "com.postcal.app"
     },
     "web": {
       "output": "static",
@@ -33,12 +43,24 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
-          }
+          "backgroundColor": "#f8f9fa"
         }
-      ]
+      ],
+      [
+        "expo-share-intent",
+        {
+          "iosActivationRules": {
+            "NSExtensionActivationSupportsText": true,
+            "NSExtensionActivationSupportsWebURLWithMaxCount": 1,
+            "NSExtensionActivationSupportsImageWithMaxCount": 1
+          },
+          "androidIntentFilters": [
+            "text/*",
+            "image/*"
+          ]
+        }
+      ],
+      "expo-calendar"
     ],
     "experiments": {
       "typedRoutes": true,

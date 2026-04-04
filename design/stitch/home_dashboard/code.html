@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InstaCalendar - Smart Sync</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-bright": "#f8f9fa",
+              "on-primary": "#ffffff",
+              "on-surface": "#191c1d",
+              "inverse-surface": "#2e3132",
+              "on-surface-variant": "#414754",
+              "secondary": "#5b5f64",
+              "on-tertiary-fixed-variant": "#783100",
+              "primary-fixed": "#d8e2ff",
+              "inverse-on-surface": "#f0f1f2",
+              "on-secondary-fixed": "#181c20",
+              "secondary-container": "#dde0e6",
+              "on-error-container": "#93000a",
+              "on-tertiary-fixed": "#341100",
+              "tertiary-fixed": "#ffdbcb",
+              "on-error": "#ffffff",
+              "surface-container": "#edeeef",
+              "on-tertiary-container": "#0e0200",
+              "on-secondary": "#ffffff",
+              "primary": "#005bbf",
+              "background": "#f8f9fa",
+              "surface-tint": "#005bc0",
+              "primary-fixed-dim": "#adc7ff",
+              "surface-container-high": "#e7e8e9",
+              "secondary-fixed": "#dfe3e8",
+              "surface-container-lowest": "#ffffff",
+              "tertiary-fixed-dim": "#ffb691",
+              "surface-container-low": "#f3f4f5",
+              "tertiary": "#9e4300",
+              "error": "#ba1a1a",
+              "secondary-fixed-dim": "#c3c7cc",
+              "outline-variant": "#c1c6d6",
+              "surface-dim": "#d9dadb",
+              "on-primary-fixed": "#001a41",
+              "on-primary-fixed-variant": "#004493",
+              "primary-container": "#1a73e8",
+              "on-primary-container": "#ffffff",
+              "on-tertiary": "#ffffff",
+              "error-container": "#ffdad6",
+              "tertiary-container": "#c55500",
+              "on-background": "#191c1d",
+              "surface-variant": "#e1e3e4",
+              "outline": "#727785",
+              "surface": "#f8f9fa",
+              "on-secondary-container": "#5f6368",
+              "surface-container-highest": "#e1e3e4",
+              "on-secondary-fixed-variant": "#43474c",
+              "inverse-primary": "#adc7ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface min-h-screen pb-32">
+<!-- Shared TopAppBar -->
+<header class="w-full top-0 sticky z-40 bg-slate-50 dark:bg-slate-900">
+<div class="flex items-center justify-between px-6 py-4 w-full max-w-2xl mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-blue-700 dark:text-blue-400" data-icon="sync_alt">sync_alt</span>
+<h1 class="font-manrope font-bold text-lg tracking-tight text-blue-700 dark:text-blue-400">Event Sync</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200">
+<span class="material-symbols-outlined text-slate-500" data-icon="notifications">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-6 py-8">
+<!-- Welcome Hero -->
+<section class="mb-12">
+<h2 class="font-headline text-3xl font-extrabold text-on-surface tracking-tight mb-2">InstaCalendar</h2>
+<p class="text-on-surface-variant body-md leading-relaxed max-w-md">Turn your saved Instagram inspirations into organized calendar events effortlessly.</p>
+</section>
+<!-- "How it Works" Bento Grid Section -->
+<section class="mb-14">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-xl text-on-surface">How it Works</h3>
+<span class="text-primary text-sm font-semibold">Pro Tips</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col gap-4 shadow-sm border border-outline-variant/10">
+<div class="w-10 h-10 rounded-lg bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface mb-1">1. Share from IG</p>
+<p class="text-xs text-on-surface-variant leading-normal">Send any post or story link directly to the app.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col gap-4 shadow-sm border border-outline-variant/10">
+<div class="w-10 h-10 rounded-lg bg-tertiary-container/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface mb-1">2. Confirm Data</p>
+<p class="text-xs text-on-surface-variant leading-normal">Our AI extracts dates, times, and locations instantly.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl flex flex-col gap-4 shadow-sm border border-outline-variant/10">
+<div class="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center text-green-600">
+<span class="material-symbols-outlined" data-icon="calendar_add_on">calendar_add_on</span>
+</div>
+<div>
+<p class="font-headline font-bold text-on-surface mb-1">3. Save to Calendar</p>
+<p class="text-xs text-on-surface-variant leading-normal">One-tap sync to Google, Apple, or Outlook.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- "Recently Imported" Section -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-bold text-xl text-on-surface">Recently Imported</h3>
+<button class="text-primary text-sm font-semibold flex items-center gap-1">
+                    View All <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Item 1 -->
+<div class="group bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:bg-surface-container-low transition-all duration-200">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Concert Stage" class="w-full h-full object-cover" data-alt="Vibrant concert stage with colorful neon lights" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9NtW_NoWAbGuFBwfPK8-np-GLfwDPNDCdIV6YhRDwrCsWNemVCz47DJP1P2SNjmEhHUjJgbYtGn70EQk4ECIR3gczGWlSAy-FuWSybmDZLGrHK83Zvs_b6RWDQXKuWyiFPliHw0k-HrcmqR-KtTbkAhLAoAzyYWVVYJGK0Zj3jDEPlPpEwL1Ehba8ImoM3CM8kOZIFuEN2sKV58UG0h2VIp-jWcQPzdGT69i0tUJCY2wJS81TTk16ejIfHnnyjkVF-Kw3r34KsLc"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Summer Jazz Festival</h4>
+<div class="flex items-center gap-3 mt-1 text-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_month">calendar_month</span>
+                                Aug 14, 2024
+                            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+                                19:00
+                            </span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Item 2 -->
+<div class="group bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:bg-surface-container-low transition-all duration-200">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Food Dish" class="w-full h-full object-cover" data-alt="Gourmet food dish on a wooden table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvzgHXkSwNhJqxi2yLPI45RvtIJgV9TpUoHL18WfxjPR6bQgeiCDgLk5oQjeacV9C0CAAl6TODSR67ejDdZM6PiQ-bjuSkvRY0J7WBM43sGFFvwQJVUbvaeEjcJzyYb_iCAnLJMA0-ZRW9L20lCMhH0PdrfbW63UllRjT6YqQPk5qL9mXTBYIszN3T7vjQoQqbcGUpp_yVzQoD00uDsuBJeY-Tji4_J9SymBVodOFaGBF-z5i-YV111zvNIScIDlFyvIN-xzYc39U"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">Italian Cooking Workshop</h4>
+<div class="flex items-center gap-3 mt-1 text-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_month">calendar_month</span>
+                                Sep 02, 2024
+                            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="location_on">location_on</span>
+                                Soho, NY
+                            </span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Item 3 -->
+<div class="group bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4 hover:bg-surface-container-low transition-all duration-200">
+<div class="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-surface-container">
+<img alt="Tech Setup" class="w-full h-full object-cover" data-alt="Laptop and coffee on a clean workspace" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPKHpy32So9yo7TC5KsOkZn3QbOP6Nq9M8dYIKoPdAry_ar-odIlHXrCHJD7LPc_8g67HFRYON2AZ-8EP7PqOM7GwwB44-DcHE3sNicm3BY6k0qTD2LA0ioqfowiwUaL3ABk2HjysHB24d7vvMxsIA_CmSRkQBY8wOnt3yFg3ZZc2uMBNoVvWV0JT4t5LDmNUp34UVfVBueZyFRcUmaE9xRAjthTHsmWmFEMHdiQkNRS19NZVllODaxoja4MEc1AShLf25VwXclp4"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline font-bold text-on-surface group-hover:text-primary transition-colors">UI Design Conference</h4>
+<div class="flex items-center gap-3 mt-1 text-sm text-on-surface-variant">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_month">calendar_month</span>
+                                Oct 12, 2024
+                            </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="videocam">videocam</span>
+                                Online
+                            </span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-high text-on-surface-variant hover:bg-primary-container hover:text-white transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Quick Sync FAB Replacement (Floating Smart Action) -->
+<div class="fixed bottom-28 right-6">
+<button class="flex items-center gap-2 bg-gradient-to-br from-primary to-primary-container text-white px-6 py-4 rounded-2xl shadow-[0_8px_32px_rgba(0,91,191,0.25)] hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-headline font-bold text-sm tracking-tight">Sync New Post</span>
+</button>
+</div>
+</main>
+<!-- Shared BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(0,0,0,0.06)] border-t border-slate-100 dark:border-slate-800">
+<!-- Home Active -->
+<a class="flex flex-col items-center justify-center text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 rounded-xl px-4 py-1 active:scale-95 transition-all duration-150 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-inter text-[11px] font-semibold tracking-wide uppercase mt-1">Home</span>
+</a>
+<!-- Recent Inactive -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1 hover:text-blue-600 dark:hover:text-blue-300 active:scale-95 transition-all duration-150 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-inter text-[11px] font-semibold tracking-wide uppercase mt-1">Recent</span>
+</a>
+<!-- Settings Inactive -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-4 py-1 hover:text-blue-600 dark:hover:text-blue-300 active:scale-95 transition-all duration-150 ease-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-inter text-[11px] font-semibold tracking-wide uppercase mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

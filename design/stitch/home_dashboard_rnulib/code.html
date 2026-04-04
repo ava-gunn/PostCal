@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InstaCalendar - Smart Sync</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-bright": "#fdf8fb",
+              "on-primary": "#ffffff",
+              "on-surface": "#1c1b1d",
+              "inverse-surface": "#313033",
+              "on-surface-variant": "#49454f",
+              "secondary": "#5f5e5f",
+              "primary": "#3e24e7",
+              "primary-container": "#5848FF",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#f7f2f5",
+              "surface-container": "#f1ecf0",
+              "surface-container-high": "#e6e1e4",
+              "surface-container-highest": "#e1dce0",
+              "outline": "#79747e",
+              "outline-variant": "#c9c5d0"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {
+              "DEFAULT": "8px",
+              "lg": "12px",
+              "xl": "16px",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        min-height: 100dvh;
+        -webkit-font-smoothing: antialiased;
+      }
+      .kinetic-shadow {
+        box-shadow: 0 4px 20px -2px rgba(88, 72, 255, 0.1);
+      }
+    </style>
+</head>
+<body class="bg-surface-bright font-body text-on-surface min-h-screen pb-40">
+<!-- Shared TopAppBar from COMPONENTS_6 -->
+<header class="w-full sticky top-0 z-40 bg-[#fdf8fb] dark:bg-[#1c1b1d]">
+<div class="flex items-center justify-between px-6 py-4 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#3e24e7] dark:text-[#c4c0ff]" data-icon="auto_awesome">auto_awesome</span>
+<h1 class="font-['Inter'] text-lg font-bold tracking-tight text-[#3e24e7] dark:text-[#c4c0ff]">InstaCalendar</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-[#e6e1e4] dark:hover:bg-[#49454f] transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+</div>
+</div>
+<!-- Separation Logic -->
+<div class="h-[1px] w-full bg-[#f7f2f5] dark:bg-[#2b2930]"></div>
+</header>
+<main class="max-w-2xl mx-auto px-6 pt-8">
+<!-- Welcome Hero -->
+<section class="mb-10">
+<h2 class="text-4xl font-black text-on-surface tracking-tighter mb-3 leading-none">InstaCalendar</h2>
+<p class="text-on-surface-variant text-base leading-snug max-w-[300px] font-medium">Turn your saved Instagram inspirations into organized calendar events effortlessly.</p>
+</section>
+<!-- "How it Works" Integrated Section -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-xl font-extrabold text-on-surface tracking-tight">How it Works</h3>
+<span class="text-primary text-sm font-bold tracking-tight">Pro Tips</span>
+</div>
+<div class="space-y-4">
+<!-- Step 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 kinetic-shadow border border-surface-container-high/50">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="share">share</span>
+</div>
+<div>
+<p class="font-bold text-on-surface text-base">1. Share from IG</p>
+<p class="text-sm text-on-surface-variant leading-tight">Send any post or story link directly to the app.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 kinetic-shadow border border-surface-container-high/50">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="verified">verified</span>
+</div>
+<div>
+<p class="font-bold text-on-surface text-base">2. Confirm Data</p>
+<p class="text-sm text-on-surface-variant leading-tight">Our AI extracts dates, times, and locations instantly.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl flex items-center gap-4 kinetic-shadow border border-surface-container-high/50">
+<div class="w-12 h-12 rounded-lg bg-surface-container flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-2xl" data-icon="calendar_add_on">calendar_add_on</span>
+</div>
+<div>
+<p class="font-bold text-on-surface text-base">3. Save to Calendar</p>
+<p class="text-sm text-on-surface-variant leading-tight">One-tap sync to Google, Apple, or Outlook.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- "Recently Imported" Section -->
+<section>
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-xl font-extrabold text-on-surface tracking-tight">Recently Imported</h3>
+<button class="text-primary text-sm font-bold flex items-center gap-1 group">
+                View All <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-0.5" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-3">
+<!-- Item 1 -->
+<div class="bg-surface-container-lowest p-3 rounded-xl flex items-center gap-4 hover:bg-surface-container-low transition-all duration-200 border border-surface-container">
+<div class="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden">
+<img alt="Concert Stage" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9NtW_NoWAbGuFBwfPK8-np-GLfwDPNDCdIV6YhRDwrCsWNemVCz47DJP1P2SNjmEhHUjJgbYtGn70EQk4ECIR3gczGWlSAy-FuWSybmDZLGrHK83Zvs_b6RWDQXKuWyiFPliHw0k-HrcmqR-KtTbkAhLAoAzyYWVVYJGK0Zj3jDEPlPpEwL1Ehba8ImoM3CM8kOZIFuEN2sKV58UG0h2VIp-jWcQPzdGT69i0tUJCY2wJS81TTk16ejIfHnnyjkVF-Kw3r34KsLc"/>
+</div>
+<div class="flex-grow min-w-0">
+<h4 class="font-bold text-on-surface truncate">Summer Jazz Festival</h4>
+<div class="flex items-center gap-3 mt-0.5 text-xs text-on-surface-variant font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="calendar_month">calendar_month</span> Aug 14</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span> 19:00</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<!-- Item 2 -->
+<div class="bg-surface-container-lowest p-3 rounded-xl flex items-center gap-4 hover:bg-surface-container-low transition-all duration-200 border border-surface-container">
+<div class="relative w-14 h-14 shrink-0 rounded-lg overflow-hidden">
+<img alt="Food Dish" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvzgHXkSwNhJqxi2yLPI45RvtIJgV9TpUoHL18WfxjPR6bQgeiCDgLk5oQjeacV9C0CAAl6TODSR67ejDdZM6PiQ-bjuSkvRY0J7WBM43sGFFvwQJVUbvaeEjcJzyYb_iCAnLJMA0-ZRW9L20lCMhH0PdrfbW63UllRjT6YqQPk5qL9mXTBYIszN3T7vjQoQqbcGUpp_yVzQoD00uDsuBJeY-Tji4_J9SymBVodOFaGBF-z5i-YV111zvNIScIDlFyvIN-xzYc39U"/>
+</div>
+<div class="flex-grow min-w-0">
+<h4 class="font-bold text-on-surface truncate">Italian Cooking Workshop</h4>
+<div class="flex items-center gap-3 mt-0.5 text-xs text-on-surface-variant font-medium">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="calendar_month">calendar_month</span> Sep 02</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]" data-icon="location_on">location_on</span> Soho, NY</span>
+</div>
+</div>
+<button class="w-8 h-8 rounded-full flex items-center justify-center bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Primary Action FAB Replacement -->
+<div class="fixed bottom-32 right-6 z-40">
+<button class="flex items-center gap-2 bg-primary-container text-white px-6 py-4 rounded-2xl shadow-[0_12px_40px_-8px_rgba(88,72,255,0.4)] hover:brightness-110 active:scale-95 transition-all duration-300">
+<span class="material-symbols-outlined text-2xl" data-icon="add_circle" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+<span class="font-bold text-sm tracking-tight">Sync New Post</span>
+</button>
+</div>
+</main>
+<!-- Shared BottomNavBar from COMPONENTS_6 -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-10 pt-3 bg-[#ffffffcc] dark:bg-[#1c1b1db3] backdrop-blur-[20px] shadow-[0_-8px_32px_rgba(28,27,29,0.06)] rounded-t-[12px]">
+<!-- Home Active -->
+<a class="flex flex-col items-center justify-center bg-[#5848ff15] dark:bg-[#c4c0ff20] text-[#3e24e7] dark:text-[#c4c0ff] rounded-[12px] px-5 py-2 active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-['Inter'] text-[11px] font-medium mt-1">Home</span>
+</a>
+<!-- Recent Inactive -->
+<a class="flex flex-col items-center justify-center text-[#5f5e5f] dark:text-[#939094] px-5 py-2 hover:bg-[#f7f2f5] dark:hover:bg-[#2b2930] active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="history">history</span>
+<span class="font-['Inter'] text-[11px] font-medium mt-1">Recent</span>
+</a>
+<!-- Settings Inactive -->
+<a class="flex flex-col items-center justify-center text-[#5f5e5f] dark:text-[#939094] px-5 py-2 hover:bg-[#f7f2f5] dark:hover:bg-[#2b2930] active:scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-[11px] font-medium mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

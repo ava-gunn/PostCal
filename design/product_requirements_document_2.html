@@ -1,0 +1,25 @@
+# Product Requirements: InstaCalendar (Mobile App)
+
+## Overview
+A mobile app that captures event details from Instagram posts via the system share sheet, processes the data using OCR, and exports the event to the user's preferred calendar.
+
+## User Flow
+1. **Share from Instagram**: User finds an event on Instagram, clicks "Share", and selects the InstaCalendar app.
+2. **Data Extraction**: The app receives the post URL/image, performs OCR and data parsing to identify:
+    - Event Name
+    - Date & Time
+    - Location
+    - Description/Details
+3. **Review & Edit**: User reviews the extracted data against the original post image and makes any necessary corrections.
+4. **Calendar Export**: User selects their target calendar (Google, Apple, Outlook) and saves the event.
+
+## Key Screens
+1. **Home/Dashboard**: Instructions on how to use the app and a list of "Recently Imported" events.
+2. **Processing View**: A loading state with progress indicators for "Fetching Post", "Scanning Image", and "Parsing Details".
+3. **Event Verification**: A split-screen or layered view showing the Instagram post/image and a form with the extracted editable fields.
+4. **Success/Confirmation**: Confirms the event is saved and provides quick actions.
+
+## Design Goals
+- **Efficient**: Minimize the steps between sharing and saving.
+- **Accurate**: High focus on the "Review" stage to ensure data integrity.
+- **Integrated**: Feels like a natural extension of the mobile OS and Instagram.
