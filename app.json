@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PostCal",
-    "slug": "PostCal",
+    "slug": "postcal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -24,8 +24,6 @@
       "edgeToEdgeEnabled": true,
       "minSdkVersion": 24,
       "permissions": [
-        "android.permission.READ_CALENDAR",
-        "android.permission.WRITE_CALENDAR",
         "android.permission.READ_CALENDAR",
         "android.permission.WRITE_CALENDAR"
       ],
@@ -65,6 +63,30 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ShareExtension",
+                  "bundleIdentifier": "com.postcal.app.share-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.postcal.app"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "922c765f-341c-42e7-bc41-0c11e3ce60fa"
+      }
+    },
+    "owner": "ava-gunns-organization"
   }
 }
