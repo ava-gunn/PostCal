@@ -11,7 +11,8 @@
     "ios": {
       "bundleIdentifier": "com.postcal.app",
       "infoPlist": {
-        "MinimumOSVersion": "16.0"
+        "MinimumOSVersion": "16.0",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
@@ -67,6 +68,7 @@
     "extra": {
       "router": {},
       "eas": {
+        "projectId": "922c765f-341c-42e7-bc41-0c11e3ce60fa",
         "build": {
           "experimental": {
             "ios": {
@@ -83,8 +85,7 @@
               ]
             }
           }
-        },
-        "projectId": "922c765f-341c-42e7-bc41-0c11e3ce60fa"
+        }
       }
     },
     "owner": "ava-gunns-organization"
