@@ -4,6 +4,8 @@ Share an event from Instagram, get it on your calendar in one tap.
 
 PostCal extracts event details (name, date, time, venue) from shared social media posts using OCR and text parsing, lets you review and edit the details, then saves directly to your device calendar.
 
+<img src="screenshot.png" alt="PostCal home screen" width="300">
+
 ## How it works
 
 1. **Share** — Tap "Share" on an Instagram event post and select PostCal
