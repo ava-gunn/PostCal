@@ -1,0 +1,347 @@
+<section class="module" id="module-2" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ─────────────────────────────────────── -->
+    <div class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h2 class="module-title">Meet the Cast</h2>
+      <p class="module-subtitle">Every app is a team effort. Let's meet the key players that make PostCal tick.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 1 — The Cast of Characters
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">The Cast of Characters</h3>
+
+      <p class="animate-in">PostCal is made of small, focused <span class="term" data-definition="A reusable, self-contained piece of UI or logic in a React app. Components can be composed together like building blocks.">components</span> that each own one job. Here are the five you'll see most often.</p>
+
+      <div class="icon-rows stagger-children">
+
+        <!-- Actor 1 — ExtractionContext -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-1); color: white;">EC</div>
+          <div>
+            <strong style="color: var(--color-actor-1);">ExtractionContext &mdash; "The shared brain"</strong>
+            <p>A <span class="term" data-definition="React Context is a way to pass data through the component tree without manually threading props at every level. It acts like a global variable scoped to a subtree.">React Context</span> <span class="term" data-definition="A provider is a component that wraps part of the tree and makes shared data available to all descendants via React Context.">provider</span> that holds all shared <span class="term" data-definition="State is data that can change over time. When state updates, React re-renders the affected components to reflect the new data.">state</span>&mdash;the shared content, extraction results, user edits, and the current status (<code>idle</code> &rarr; <code>extracting</code> &rarr; <code>ready</code> &rarr; <code>saving</code> &rarr; <code>saved</code>).</p>
+          </div>
+        </div>
+
+        <!-- Actor 2 — Review Screen -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-2); color: white;">RS</div>
+          <div>
+            <strong style="color: var(--color-actor-2);">Review Screen &mdash; "The command center"</strong>
+            <p>The most complex screen. It receives share data, kicks off the extraction <span class="term" data-definition="A pipeline is a sequence of processing steps chained together, where each step's output feeds into the next.">pipeline</span>, displays the editable form, and handles the save action.</p>
+          </div>
+        </div>
+
+        <!-- Actor 3 — Extraction Pipeline -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-3); color: white;">EP</div>
+          <div>
+            <strong style="color: var(--color-actor-3);">Extraction Pipeline &mdash; "The workhorse"</strong>
+            <p>Orchestrates <span class="term" data-definition="OCR (Optical Character Recognition) is a technology that reads text from images. PostCal uses it to extract event details from Instagram screenshots.">OCR</span>, text parsing, and result merging. Lives in <code>lib/extraction/run-pipeline.ts</code> and does all the heavy data lifting.</p>
+          </div>
+        </div>
+
+        <!-- Actor 4 — Root Layout -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-4); color: white;">RL</div>
+          <div>
+            <strong style="color: var(--color-actor-4);">Root Layout &mdash; "The stage manager"</strong>
+            <p>Loads fonts, sets up the theme, wraps everything in providers, and bridges <span class="term" data-definition="A share intent is an OS-level action where one app sends data (text, images, URLs) to another app. On Android and iOS, this is the 'Share' sheet.">share intents</span> into <span class="term" data-definition="Navigation is the system that moves users between screens in a mobile app. In Expo Router, it's file-based: each file in app/ becomes a route.">navigation</span> events.</p>
+          </div>
+        </div>
+
+        <!-- Actor 5 — Calendar Module -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-5); color: white;">CM</div>
+          <div>
+            <strong style="color: var(--color-actor-5);">Calendar Module &mdash; "The finish line"</strong>
+            <p>The last step. Requests calendar permission, creates the event, and returns the new event ID. Lives in <code>lib/calendar/</code>.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pit crew metaphor -->
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">&#9881;</span>
+        <div class="callout-content">
+          <span class="callout-title">Think of it like a pit crew</span>
+          <p>Each person has one job, and they work together in a precise sequence to get the car back on the track. No single component tries to do everything&mdash;they hand off cleanly.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 2 — How They Talk
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">How They Talk</h3>
+
+      <p class="animate-in">Watch the cast pass data from share to save. Each message is a real step in the PostCal flow.</p>
+
+      <div class="chat-window animate-in" id="chat-module2">
+        <div class="chat-messages">
+
+          <!-- 1. Root Layout -->
+          <div class="chat-message" data-sender="actor-4" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-4);">RL</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-4);">Root Layout</span>
+              <p>Heads up everyone &mdash; incoming share intent from Instagram!</p>
+            </div>
+          </div>
+
+          <!-- 2. Review Screen -->
+          <div class="chat-message" data-sender="actor-2" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-2);">RS</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2);">Review Screen</span>
+              <p>Got it. Let me grab the shared content and kick off extraction.</p>
+            </div>
+          </div>
+
+          <!-- 3. Extraction Pipeline -->
+          <div class="chat-message" data-sender="actor-3" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-3);">EP</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-3);">Extraction Pipeline</span>
+              <p>On it. Running OCR on the image and parsing the caption text...</p>
+            </div>
+          </div>
+
+          <!-- 4. Extraction Pipeline (done) -->
+          <div class="chat-message" data-sender="actor-3" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-3);">EP</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-3);">Extraction Pipeline</span>
+              <p>Done! Found: <strong>DJ Night</strong>, March 28, 10 PM, The Warehouse.</p>
+            </div>
+          </div>
+
+          <!-- 5. ExtractionContext -->
+          <div class="chat-message" data-sender="actor-1" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-1);">EC</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-1);">ExtractionContext</span>
+              <p>Stored. Status is now <code>ready</code>. Review Screen, show the form.</p>
+            </div>
+          </div>
+
+          <!-- 6. Review Screen (form) -->
+          <div class="chat-message" data-sender="actor-2" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-2);">RS</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2);">Review Screen</span>
+              <p>Form is showing. User edited the venue to add the full address.</p>
+            </div>
+          </div>
+
+          <!-- 7. Review Screen (save) -->
+          <div class="chat-message" data-sender="actor-2" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-2);">RS</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2);">Review Screen</span>
+              <p>User tapped Save. Requesting calendar permission...</p>
+            </div>
+          </div>
+
+          <!-- 8. Calendar Module -->
+          <div class="chat-message" data-sender="actor-5" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-5);">CM</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-5);">Calendar Module</span>
+              <p>Permission granted. Event created! ID: <code>abc123</code>.</p>
+            </div>
+          </div>
+
+          <!-- 9. ExtractionContext (saved) -->
+          <div class="chat-message" data-sender="actor-1" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-1);">EC</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-1);">ExtractionContext</span>
+              <p>Status &rarr; <code>saved</code>. Navigating to Success screen.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="chat-typing" style="display:none;">
+          <div class="chat-avatar" id="chat-module2-typing-avatar" style="background: var(--color-actor-1);">?</div>
+          <div class="chat-typing-dots">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="chat-controls">
+          <button class="btn chat-next-btn">Next Message</button>
+          <button class="btn chat-all-btn">Play All</button>
+          <button class="btn chat-reset-btn">Reset</button>
+          <span class="chat-progress">0 / 9 messages</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 3 — The File Map
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">The File Map</h3>
+
+      <p class="animate-in">Here is the <span class="term" data-definition="A file tree is a visual representation of how files and folders are organized inside a project. It shows the hierarchy at a glance.">file tree</span> for the PostCal project. Each folder groups files by purpose.</p>
+
+      <div class="file-tree animate-in">
+
+        <!-- app/ -->
+        <div class="ft-folder">
+          <span class="ft-name">app/</span>
+          <span class="ft-desc">&mdash; Screens and <span class="term" data-definition="A route is a URL path that maps to a specific screen. In Expo Router, every file inside app/ automatically becomes a route.">routing</span></span>
+          <div class="ft-children">
+            <div class="ft-file">
+              <span class="ft-name">_layout.tsx</span>
+              <span class="ft-desc">&mdash; Root layout with <span class="term" data-definition="In TypeScript/React, providers are wrapper components that supply shared data (like theme or state) to all children via Context.">providers</span></span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">index.tsx</span>
+              <span class="ft-desc">&mdash; Home screen (instructions)</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">review.tsx</span>
+              <span class="ft-desc">&mdash; Event review and edit form</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">success.tsx</span>
+              <span class="ft-desc">&mdash; Confirmation screen</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- lib/ -->
+        <div class="ft-folder">
+          <span class="ft-name">lib/</span>
+          <span class="ft-desc">&mdash; Business logic</span>
+          <div class="ft-children">
+            <div class="ft-folder">
+              <span class="ft-name">extraction/</span>
+              <span class="ft-desc">&mdash; OCR and parsing pipeline</span>
+            </div>
+            <div class="ft-folder">
+              <span class="ft-name">calendar/</span>
+              <span class="ft-desc">&mdash; Calendar integration</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- components/ -->
+        <div class="ft-folder">
+          <span class="ft-name">components/</span>
+          <span class="ft-desc">&mdash; Reusable UI pieces</span>
+        </div>
+
+        <!-- context/ -->
+        <div class="ft-folder">
+          <span class="ft-name">context/</span>
+          <span class="ft-desc">&mdash; Global state (ExtractionContext)</span>
+        </div>
+
+        <!-- theme/ -->
+        <div class="ft-folder">
+          <span class="ft-name">theme/</span>
+          <span class="ft-desc">&mdash; Design system (colors, fonts, spacing)</span>
+        </div>
+
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">&#128270;</span>
+        <div class="callout-content">
+          <span class="callout-title">Notice the pattern</span>
+          <p><code>app/</code> holds screens, <code>lib/</code> holds logic, <code>context/</code> holds state. <span class="term" data-definition="TypeScript is a typed superset of JavaScript. It adds static types so the compiler can catch errors before the code runs.">TypeScript</span> files end in <code>.tsx</code> (UI) or <code>.ts</code> (logic). Keeping these apart makes changes predictable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 4 — Quiz
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Check Your Understanding</h3>
+
+      <div class="quiz-container animate-in" id="quiz-module2">
+
+        <!-- Q1 -->
+        <div class="quiz-question-block" data-correct="c" data-explanation-right="The Review Screen (<code>app/review.tsx</code>) renders the event form, so that's where you'd add a new field." data-explanation-wrong="The form lives in <code>app/review.tsx</code> &mdash; the Review Screen is the command center for editing event data.">
+          <p class="quiz-question">1. You want to add a Notes field to the event form. Which file would you modify?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>_layout.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>run-pipeline.ts</code>
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>review.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>extraction-context.tsx</code>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question-block" data-correct="b" data-explanation-right="Date parsing logic lives in the extraction folder at <code>lib/extraction/parse-date-time.ts</code>." data-explanation-wrong="Parsing happens in <code>lib/extraction/</code>. The file <code>parse-date-time.ts</code> is where date logic lives &mdash; not in the screen or context layer.">
+          <p class="quiz-question">2. The extraction pipeline found the wrong date. Where would you look to fix the date parsing logic?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>app/review.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>lib/extraction/parse-date-time.ts</code>
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>context/extraction-context.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>app/success.tsx</code>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question-block" data-correct="b" data-explanation-right="ExtractionContext is the shared brain &mdash; it holds state like extraction results, user edits, and the current status." data-explanation-wrong="ExtractionContext doesn't render UI, write to the calendar, or read images. It holds shared state that other <span class='term' data-definition='Props (short for properties) are read-only inputs passed from a parent component to a child component in React.'>components</span> read from and write to.">
+          <p class="quiz-question">3. What does ExtractionContext do?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It renders the UI
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It holds shared state like extraction results and status
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It writes events to the calendar
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It reads text from images
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz buttons -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">Reset</button>
+
+      </div>
+    </div>
+
+  </div>
+</section>

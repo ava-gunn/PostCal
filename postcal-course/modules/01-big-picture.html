@@ -1,0 +1,271 @@
+<section class="module" id="module-1" style="background: var(--color-bg)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ──────────────────────────────────────── -->
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">The Big Picture</h1>
+      <p class="module-subtitle">What PostCal does and the user journey traced through code.</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 1 — What is PostCal?
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-1">
+      <h2 class="screen-heading animate-in">What is PostCal?</h2>
+
+      <p class="animate-in">
+        You see a concert flyer on Instagram. You want it in your calendar.
+        Normally you would screenshot it, squint at the date, and manually type everything into a new event.
+      </p>
+      <p class="animate-in">
+        PostCal eliminates that friction. Share the Instagram post, review the pre-filled details, and save — done.
+      </p>
+
+      <!-- 3-step flow: Share → Review → Save -->
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Share</strong>
+            <p>Tap the share button on any Instagram event post and pick PostCal from the <span class="term" data-definition="A share intent is the operating system mechanism that lets one app send data (text, images, links) to another app.">share intent</span> list.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Review</strong>
+            <p>PostCal reads the image and caption, then shows you a form with the event name, date, time, and venue already filled in.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Save</strong>
+            <p>One tap writes the event straight to your device calendar. No account, no cloud, no waiting.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metaphor callout -->
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <span class="callout-title">Think of it this way</span>
+          <p>PostCal is like a personal assistant who reads event flyers for you and fills out the calendar entry — you just approve it.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 2 — Follow the Data
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-2">
+      <h2 class="screen-heading animate-in">Follow the Data</h2>
+
+      <p class="animate-in">
+        When you share an Instagram post, a chain of transformations turns raw pixels and text into a calendar event. Step through the animation below to see each handoff.
+      </p>
+
+      <div class="flow-animation animate-in"
+           id="flow-module1"
+           data-steps='[
+             {"label":"Instagram sends the post URL, caption text, and image to PostCal via the share sheet.","highlight":"flow-instagram","packet":true,"from":"instagram","to":"share-intent"},
+             {"label":"The share intent delivers both the caption text and the image into the app.","highlight":"flow-share-intent","packet":true,"from":"share-intent","to":"ocr-engine"},
+             {"label":"PostCal reads the caption for metadata: links, descriptions, and raw text.","highlight":"flow-share-intent"},
+             {"label":"The OCR engine scans the image and extracts any text burned into the picture.","highlight":"flow-ocr-engine","packet":true,"from":"ocr-engine","to":"parser"},
+             {"label":"Both text sources get merged into one combined string for analysis.","highlight":"flow-parser"},
+             {"label":"Parsers extract structured fields: event name, date, time, and venue.","highlight":"flow-parser","packet":true,"from":"parser","to":"review-screen"},
+             {"label":"The review screen shows pre-filled form fields so the user can verify or edit.","highlight":"flow-review-screen","packet":true,"from":"review-screen","to":"calendar"},
+             {"label":"User taps Save and the event is written to the device calendar. Done!","highlight":"flow-calendar"}
+           ]'>
+
+        <!-- Actors row -->
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-instagram">
+            <div class="flow-actor-icon">📱</div>
+            <span>Instagram</span>
+          </div>
+          <div class="flow-actor" id="flow-share-intent">
+            <div class="flow-actor-icon">📨</div>
+            <span>Share Intent</span>
+          </div>
+          <div class="flow-actor" id="flow-ocr-engine">
+            <div class="flow-actor-icon">👁️</div>
+            <span>OCR Engine</span>
+          </div>
+          <div class="flow-actor" id="flow-parser">
+            <div class="flow-actor-icon">🔍</div>
+            <span>Parser</span>
+          </div>
+          <div class="flow-actor" id="flow-review-screen">
+            <div class="flow-actor-icon">📋</div>
+            <span>Review Screen</span>
+          </div>
+          <div class="flow-actor" id="flow-calendar">
+            <div class="flow-actor-icon">📅</div>
+            <span>Calendar</span>
+          </div>
+        </div>
+
+        <!-- Animated packet -->
+        <div class="flow-packet"></div>
+
+        <!-- Step label -->
+        <div class="flow-step-label">Click "Next Step" to begin</div>
+
+        <!-- Controls -->
+        <div class="flow-controls">
+          <button class="btn btn-primary flow-next-btn">Next Step</button>
+          <button class="btn flow-reset-btn">Reset</button>
+          <span class="flow-progress">Step 0 / 8</span>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🔑</span>
+        <div class="callout-content">
+          <span class="callout-title">Two text sources, one result</span>
+          <p>The caption <span class="term" data-definition="Metadata is data about data — in this case, the text, hashtags, and links Instagram attaches to a post, separate from the image pixels.">metadata</span> and the <span class="term" data-definition="OCR (Optical Character Recognition) is a technology that reads text from images — converting pixels of letters into actual text characters a computer can understand.">OCR</span> output are merged before parsing. This means PostCal catches event details whether they appear in the caption or burned into the image itself.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 3 — The Tech Behind It
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-3">
+      <h2 class="screen-heading animate-in">The Tech Behind It</h2>
+
+      <p class="animate-in">
+        PostCal is built with a focused stack of libraries, each handling one job. Every piece runs on the device — nothing leaves the phone.
+      </p>
+
+      <div class="pattern-cards stagger-children animate-in">
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">⚛️</div>
+          <div class="pattern-title"><span class="term" data-definition="React Native is a framework that lets you build native mobile apps for iOS and Android using JavaScript and React components instead of platform-specific languages.">React Native</span> / <span class="term" data-definition="Expo is a platform and set of tools built around React Native that simplifies building, deploying, and updating mobile apps without needing Xcode or Android Studio for most tasks.">Expo</span></div>
+          <p class="pattern-desc">The app framework. Write once in JavaScript, run natively on iOS and Android.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-info-light); color: var(--color-info);">🔷</div>
+          <div class="pattern-title"><span class="term" data-definition="TypeScript is a superset of JavaScript that adds static type annotations, catching type errors at build time instead of at runtime.">TypeScript</span></div>
+          <p class="pattern-desc">The language. Adds type safety on top of JavaScript so bugs surface at build time, not in production.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #F3E8FF; color: #7B6DAA;">👁️</div>
+          <div class="pattern-title">expo-text-extractor</div>
+          <p class="pattern-desc">The OCR engine. Uses on-device vision <span class="term" data-definition="An API (Application Programming Interface) is a set of rules that lets one piece of software talk to another — like a menu that lists what you can order from a service.">API</span>s to read text from images without sending anything to the cloud.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-success-light); color: var(--color-success);">📆</div>
+          <div class="pattern-title">chrono-node</div>
+          <p class="pattern-desc">The date <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured data from it — like finding a date inside a sentence.">parser</span>. Understands natural language dates like &ldquo;next Friday at 8pm&rdquo; and converts them to real timestamps.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #FFF3E0; color: #D4A843;">📅</div>
+          <div class="pattern-title">expo-calendar</div>
+          <p class="pattern-desc">The calendar writer. An <span class="term" data-definition="An SDK (Software Development Kit) is a collection of tools, libraries, and documentation that helps developers build apps for a specific platform or service.">SDK</span> module that writes events directly to the native iOS or Android calendar.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">🧠</div>
+          <div class="pattern-title"><span class="term" data-definition="React Context is a built-in React feature for sharing state across many components without passing props through every level of the tree — like a bulletin board any component can read.">React Context</span></div>
+          <p class="pattern-desc">The state manager. Shares extracted event data across every screen without prop-drilling.</p>
+        </div>
+      </div>
+
+      <!-- Why on-device -->
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">🔒</span>
+        <div class="callout-content">
+          <span class="callout-title">Why everything runs on-device</span>
+          <p>Privacy: your Instagram data never leaves your phone. Cost: no servers to pay for. Reliability: works offline, in airplane mode, with zero latency. This is the core design principle behind every technical choice in PostCal.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 4 — Quiz
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-4">
+      <h2 class="screen-heading animate-in">Check Your Understanding</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module1">
+
+        <!-- Q1 -->
+        <div class="quiz-question-block"
+             data-correct="b"
+             data-explanation-right="PostCal first extracts text from the caption and runs OCR on the image before doing anything else."
+             data-explanation-wrong="PostCal needs to read the content before it can save anything. The first step is always text extraction.">
+          <p class="quiz-question">A user shares an Instagram post of a concert flyer. What does PostCal do FIRST with the shared content?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Save it to calendar immediately
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Extract text from caption and image
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Ask the user to type the event details
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Send it to a server for processing
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question-block"
+             data-correct="b"
+             data-explanation-right="On-device processing means better privacy, zero hosting costs, and full offline support."
+             data-explanation-wrong="The real reasons are privacy, cost savings, and offline reliability — not platform rules or laziness.">
+          <p class="quiz-question">Why does PostCal run entirely on-device instead of using a cloud service?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Cloud services are too slow
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Privacy, no costs, and works offline
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Apple requires it
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The developer was too lazy to build a backend
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question-block"
+             data-correct="c"
+             data-explanation-right="PostCal gracefully degrades — if it cannot find a date, it still shows the form so the user can fill in the blanks manually."
+             data-explanation-wrong="PostCal never crashes or deletes data. It shows the form with empty fields and lets the user type the missing info.">
+          <p class="quiz-question">What happens if PostCal cannot find a date in the shared content?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app crashes
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It asks the user to re-share
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It shows the form with empty fields so the user can type it
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It deletes the event
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz controls -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>

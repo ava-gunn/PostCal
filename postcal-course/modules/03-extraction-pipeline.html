@@ -1,0 +1,364 @@
+<section class="module" id="module-3" style="background: var(--color-bg)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ──────────────────────────────────────── -->
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">The Extraction Pipeline</h1>
+      <p class="module-subtitle">Deep dive into how PostCal reads and understands shared content.</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 1 — The Assembly Line
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-1">
+      <h2 class="screen-heading animate-in">The Assembly Line</h2>
+
+      <p class="animate-in">
+        The extraction <span class="term" data-definition="A pipeline is a sequence of processing stages where the output of one stage becomes the input of the next, like stations on an assembly line.">pipeline</span> is like a team of translators working on a foreign document. Each specialist handles one part — dates, names, addresses — and their work gets combined into a complete translation.
+      </p>
+      <p class="animate-in">
+        No single stage does everything. Instead, seven focused steps each do one job well, then pass their results forward.
+      </p>
+
+      <!-- 7 pipeline stages -->
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>parseShareIntent(shareIntent)</strong>
+            <p>Extracts the raw text, <span class="term" data-definition="A URI (Uniform Resource Identifier) that points to an image file stored on the device. It tells the app where to find the picture.">imageUri</span>, and <span class="term" data-definition="A MIME type describes the format of a file, such as image/jpeg for a JPEG photo or text/plain for plain text.">mimeType</span> from the incoming share data.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>extractTextFromImage(imageUri)</strong>
+            <p>Runs on-device <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> via expo-text-extractor (<span class="term" data-definition="ML Kit is Google's on-device machine learning library for Android. It provides ready-to-use models for text recognition, face detection, and more.">ML Kit</span> on Android, <span class="term" data-definition="Apple Vision is Apple's on-device computer vision framework for iOS and macOS. It can recognize text, faces, barcodes, and objects in images.">Apple Vision</span> on iOS). Returns joined text blocks or <span class="term" data-definition="null is a special value meaning 'nothing' or 'no value'. It signals that a result is intentionally empty or missing.">null</span>.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>mergeExtractionSources(metadataText, ocrText)</strong>
+            <p>Combines caption text and <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> text with a separator <code>\n---\n</code> so downstream <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parsers</span> can distinguish the two sources.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>parseDateTime(rawText)</strong>
+            <p>Uses <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> to parse natural language dates. Returns <code>{ date: &quot;YYYY-MM-DD&quot;, time: &quot;HH:MM&quot; }</code>.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <strong>parseEventName(rawText)</strong>
+            <p>Finds the first non-URL line of text. Prioritizes the <span class="term" data-definition="Metadata is data about data — in PostCal, it refers to the caption text and other information that Instagram attaches to a shared post, as opposed to the image pixels themselves.">metadata</span> section over <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> text.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <strong>parseVenue(rawText)</strong>
+            <p>Applies <span class="term" data-definition="A regex (regular expression) is a pattern-matching language used to search text for specific formats, like phone numbers, email addresses, or street addresses.">regex</span> patterns to find venues: street addresses, &quot;at Venue&quot;, &quot;@ Venue&quot;, and labeled fields like <code>venue:</code>, <code>location:</code>, <code>where:</code>.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <strong>buildEventFields(results)</strong>
+            <p>Assembles the final ExtractionResult with <span class="term" data-definition="A confidence score is a number (usually 0 to 1) that indicates how sure the system is about a particular result. Higher means more confident.">confidence scores</span> for each extracted field.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 2 — Reading the Image
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-2">
+      <h2 class="screen-heading animate-in">Reading the Image</h2>
+
+      <p class="animate-in">
+        This is the <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> that turns image pixels into readable text. Walk through each line of real code alongside its plain English translation.
+      </p>
+
+      <!-- Translation block: extractTextFromImage -->
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">TypeScript</span>
+<code><span class="code-line"><span class="code-keyword">export</span> <span class="code-keyword">async</span> <span class="code-keyword">function</span> <span class="code-function">extractTextFromImage</span>(</span>
+<span class="code-line">  <span class="code-property">imageUri</span>: <span class="code-keyword">string</span></span>
+<span class="code-line">): <span class="code-keyword">Promise</span>&lt;<span class="code-keyword">string</span> | <span class="code-keyword">null</span>&gt; {</span>
+<span class="code-line">  <span class="code-keyword">try</span> {</span>
+<span class="code-line">    <span class="code-keyword">const</span> {</span>
+<span class="code-line">      <span class="code-property">extractTextFromImage</span>: <span class="code-property">extractText</span>,</span>
+<span class="code-line">      <span class="code-property">isSupported</span>,</span>
+<span class="code-line">    } <span class="code-operator">=</span> <span class="code-function">require</span>(<span class="code-string">'expo-text-extractor'</span>);</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="code-keyword">if</span> (<span class="code-operator">!</span><span class="code-property">isSupported</span>) {</span>
+<span class="code-line">      <span class="code-keyword">return</span> <span class="code-keyword">null</span>;</span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="code-keyword">const</span> <span class="code-property">blocks</span> <span class="code-operator">=</span> <span class="code-keyword">await</span> <span class="code-function">extractText</span>(<span class="code-property">imageUri</span>);</span>
+<span class="code-line">    <span class="code-keyword">const</span> <span class="code-property">joined</span> <span class="code-operator">=</span> <span class="code-property">blocks</span>.<span class="code-function">join</span>(<span class="code-string">'\n'</span>).<span class="code-function">trim</span>();</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="code-keyword">return</span> <span class="code-property">joined</span> <span class="code-operator">||</span> <span class="code-keyword">null</span>;</span>
+<span class="code-line">  } <span class="code-keyword">catch</span> {</span>
+<span class="code-line">    <span class="code-keyword">return</span> <span class="code-keyword">null</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <div class="tl">Define a <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> that takes an image file path and <span class="term" data-definition="A Promise is a placeholder for a value that will arrive in the future. It represents an asynchronous operation that hasn't completed yet.">promises</span> to return text (or nothing).</div>
+            <div class="tl">Start a safety net — if anything goes wrong, we handle it gracefully.</div>
+            <div class="tl">Load the <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> library on demand (not upfront, so the app works even without it).</div>
+            <div class="tl">Check if this device supports text recognition — not all do.</div>
+            <div class="tl">If not supported, politely give up and return nothing.</div>
+            <div class="tl">Ask the <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> engine to read all text blocks from the image.</div>
+            <div class="tl">Combine all the text blocks into one <span class="term" data-definition="A string is a sequence of characters — letters, numbers, symbols — treated as text data rather than as code or numbers.">string</span>, separated by line breaks.</div>
+            <div class="tl">Return the text if we found any, otherwise return nothing.</div>
+            <div class="tl">If anything crashed, just return nothing instead of breaking the whole app.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Callout: graceful degradation -->
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🛡</span>
+        <div class="callout-content">
+          <span class="callout-title">Graceful Degradation</span>
+          <p>This pattern — <span class="term" data-definition="try/catch is a control structure that lets code attempt something risky inside the 'try' block. If it fails, the 'catch' block runs instead, preventing the whole program from crashing.">trying something</span> and returning <span class="term" data-definition="null is a special value meaning 'nothing' or 'no value'. It signals that a result is intentionally empty or missing.">null</span> instead of crashing — is called <span class="term" data-definition="Graceful degradation is a design pattern where a system continues to function (with reduced features) even when one component fails, instead of crashing entirely.">graceful degradation</span>. It means the app keeps working even when one piece fails.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 3 — Finding the Date
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-3">
+      <h2 class="screen-heading animate-in">Finding the Date</h2>
+
+      <p class="animate-in">
+        Dates in event posts come in every format imaginable — &quot;next Saturday&quot;, &quot;March 28th at 10pm&quot;, &quot;03/28/2026&quot;. The <code>parseDateTime</code> <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> delegates this hard problem to <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span>.
+      </p>
+
+      <!-- Translation block: parseDateTime -->
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">TypeScript</span>
+<code><span class="code-line"><span class="code-keyword">const</span> <span class="code-property">results</span> <span class="code-operator">=</span> <span class="code-property">chrono</span>.<span class="code-function">parse</span>(<span class="code-property">text</span>);</span>
+<span class="code-line"><span class="code-keyword">if</span> (<span class="code-property">results</span>.<span class="code-property">length</span> <span class="code-operator">===</span> <span class="code-number">0</span>) <span class="code-keyword">return</span> { <span class="code-property">date</span>: <span class="code-keyword">null</span>, <span class="code-property">time</span>: <span class="code-keyword">null</span> };</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">ref</span> <span class="code-operator">=</span> <span class="code-property">results</span>[<span class="code-number">0</span>];</span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">start</span> <span class="code-operator">=</span> <span class="code-property">ref</span>.<span class="code-property">start</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">date</span> <span class="code-operator">=</span> [</span>
+<span class="code-line">  <span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'year'</span>),</span>
+<span class="code-line">  <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'month'</span>)).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">  <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'day'</span>)).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">].<span class="code-function">join</span>(<span class="code-string">'-'</span>);</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">time</span> <span class="code-operator">=</span> <span class="code-property">start</span>.<span class="code-function">isCertain</span>(<span class="code-string">'hour'</span>)</span>
+<span class="code-line">  <span class="code-operator">?</span> [</span>
+<span class="code-line">      <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'hour'</span>)).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">      <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'minute'</span>) <span class="code-operator">??</span> <span class="code-number">0</span>).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">    ].<span class="code-function">join</span>(<span class="code-string">':'</span>)</span>
+<span class="code-line">  <span class="code-operator">:</span> <span class="code-keyword">null</span>;</span></code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <div class="tl">Ask <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> to find any dates or times mentioned in the text.</div>
+            <div class="tl">If it found nothing, give up — no date, no time.</div>
+            <div class="tl">Take the first date it found (usually the most prominent one).</div>
+            <div class="tl">Pull out the specific start date/time details.</div>
+            <div class="tl">Build a clean date <span class="term" data-definition="A string is a sequence of characters — letters, numbers, symbols — treated as text data rather than as code or numbers.">string</span> like <code>2026-03-28</code> from year, month, day.</div>
+            <div class="tl">Pad single-digit months and days with a zero (3 becomes 03) using <span class="term" data-definition="padStart is a JavaScript string method that adds characters to the beginning of a string until it reaches a desired length. padStart(2, '0') turns '3' into '03'.">padStart</span>.</div>
+            <div class="tl">Only include the time if <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> is confident it found one.</div>
+            <div class="tl">Format it as HH:MM (like <code>22:00</code> for 10 PM).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Callout: chrono-node -->
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">📅</span>
+        <div class="callout-content">
+          <span class="callout-title">The Power of chrono-node</span>
+          <p><span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> understands natural language dates — &quot;next Saturday at 8pm&quot;, &quot;March 28&quot;, &quot;tomorrow evening&quot;. It is one of the most powerful date <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parsing</span> libraries available.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 4 — Merging and Matching
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-4">
+      <h2 class="screen-heading animate-in">Merging and Matching</h2>
+
+      <p class="animate-in">
+        Before the <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parsers</span> can do their work, two text sources need to become one. The <code>mergeExtractionSources</code> <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> joins them with a clear divider.
+      </p>
+
+      <!-- Merge visual -->
+      <div class="flow-animation animate-in" style="pointer-events: none;">
+        <div class="flow-actors" style="justify-content: center; gap: var(--space-8);">
+          <div class="flow-actor" style="flex: 0 0 auto;">
+            <div class="flow-actor-icon" style="border-color: var(--color-actor-2); width: auto; padding: 0 var(--space-4); font-size: var(--text-sm); font-family: var(--font-mono);">📝</div>
+            <span><span class="term" data-definition="Metadata is data about data — in PostCal, it refers to the caption text and other information that Instagram attaches to a shared post, as opposed to the image pixels themselves.">Metadata</span> Text</span>
+            <div style="background: var(--color-bg-warm); border-radius: var(--radius-sm); padding: var(--space-3); font-size: var(--text-sm); color: var(--color-text-secondary); max-width: 200px; text-align: center; margin-top: var(--space-2);">
+              &quot;DJ Night at Warehouse<br>Next Saturday 10pm&quot;
+            </div>
+          </div>
+          <div style="font-size: var(--text-2xl); color: var(--color-accent); font-weight: 700; align-self: center;">+</div>
+          <div class="flow-actor" style="flex: 0 0 auto;">
+            <div class="flow-actor-icon" style="border-color: var(--color-actor-3); width: auto; padding: 0 var(--space-4); font-size: var(--text-sm); font-family: var(--font-mono);">👁</div>
+            <span><span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> Text</span>
+            <div style="background: var(--color-bg-warm); border-radius: var(--radius-sm); padding: var(--space-3); font-size: var(--text-sm); color: var(--color-text-secondary); max-width: 200px; text-align: center; margin-top: var(--space-2);">
+              &quot;123 Industrial Blvd<br>Doors 9pm / Show 10pm&quot;
+            </div>
+          </div>
+        </div>
+        <!-- Arrow down -->
+        <div style="text-align: center; font-size: var(--text-2xl); color: var(--color-text-muted); margin: var(--space-4) 0;">&#8595;</div>
+        <!-- Merged result -->
+        <div style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-5); font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4; max-width: 400px; margin: 0 auto; line-height: 1.8;">
+          <span class="code-string">DJ Night at Warehouse</span><br>
+          <span class="code-string">Next Saturday 10pm</span><br>
+          <span class="code-comment">---</span><br>
+          <span class="code-string">123 Industrial Blvd</span><br>
+          <span class="code-string">Doors 9pm / Show 10pm</span>
+        </div>
+        <div style="text-align: center; margin-top: var(--space-3);">
+          <span style="font-size: var(--text-xs); font-family: var(--font-mono); color: var(--color-text-muted); letter-spacing: 0.05em;">MERGED OUTPUT — the <code>---</code> separator lets parsers know where caption ends and image text begins</span>
+        </div>
+      </div>
+
+      <p class="animate-in" style="margin-top: var(--space-8);">
+        Once merged, <code>parseVenue</code> scans the combined text using <span class="term" data-definition="A regex (regular expression) is a pattern-matching language used to search text for specific formats, like phone numbers, email addresses, or street addresses.">regex</span> patterns in priority order. The most specific patterns win.
+      </p>
+
+      <!-- Venue pattern cards -->
+      <div class="pattern-cards stagger-children animate-in">
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-success-light); color: var(--color-success);">1</div>
+          <div class="pattern-title">Street Address</div>
+          <p class="pattern-desc"><code>123 Main St</code> — highest priority. A numbered street address is the most reliable indicator of a physical venue.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-info-light); color: var(--color-info);">2</div>
+          <div class="pattern-title">&quot;at Venue&quot;</div>
+          <p class="pattern-desc"><code>at The Warehouse</code> — second priority. The word &quot;at&quot; before a capitalized name strongly suggests a venue.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">3</div>
+          <div class="pattern-title">&quot;@ Venue&quot;</div>
+          <p class="pattern-desc"><code>@ Brooklyn Bowl</code> — third priority. The @ symbol is informal but commonly used for venues in social media posts.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-error-light); color: var(--color-error);">4</div>
+          <div class="pattern-title">Labeled Field</div>
+          <p class="pattern-desc"><code>venue: Madison Square Garden</code> — fourth priority. Explicit labels like <code>venue:</code>, <code>location:</code>, or <code>where:</code> are clear but less common.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 5 — Quiz
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-5">
+      <h2 class="screen-heading animate-in">Check Your Understanding</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module3">
+
+        <!-- Question 1 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="parseDateTime hands the text to chrono-node, which understands natural language dates like 'next Saturday 10pm'."
+             data-explanation-wrong="parseDateTime is the stage that uses chrono-node to interpret natural language dates and times from the text.">
+          <div class="quiz-question">An Instagram post says &quot;DJ Night at Warehouse, next Saturday 10pm&quot;. Which <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parser</span> finds &quot;next Saturday 10pm&quot;?</div>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              parseVenue
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              parseEventName
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              parseDateTime using <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span>
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              extractTextFromImage
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="Thanks to graceful degradation, extractTextFromImage returns null when OCR fails, and the pipeline continues with whatever caption text is available."
+             data-explanation-wrong="The OCR function uses graceful degradation — it returns null on failure instead of crashing, so the pipeline continues with just the caption text.">
+          <div class="quiz-question">The <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> engine fails on a blurry image. What happens to the rest of the <span class="term" data-definition="A pipeline is a sequence of processing stages where the output of one stage becomes the input of the next, like stations on an assembly line.">pipeline</span>?</div>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              The whole app crashes
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              The pipeline stops and shows an error
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              The pipeline continues with just the caption text
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              It retries the OCR 3 times
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-question-block" data-correct="b"
+             data-explanation-right="Street addresses contain a number and a street name — they are very specific and almost always indicate a real physical location. Vaguer patterns like 'at Venue' could match non-venue phrases."
+             data-explanation-wrong="Street addresses are checked first because they are the most specific and reliable indicators of a real venue. A pattern like '123 Main St' is almost never a false positive.">
+          <div class="quiz-question">Why does <code>parseVenue</code> check for street addresses BEFORE checking for &quot;at Venue&quot; patterns?</div>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              Street addresses are faster to find
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              Street addresses are more specific and reliable indicators of a real venue
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              It is alphabetical order
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              There is no particular reason
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz buttons -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>

@@ -68,24 +68,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "922c765f-341c-42e7-bc41-0c11e3ce60fa",
-        "build": {
-          "experimental": {
-            "ios": {
-              "appExtensions": [
-                {
-                  "targetName": "ShareExtension",
-                  "bundleIdentifier": "com.postcal.app.share-extension",
-                  "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.com.postcal.app"
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        }
+        "projectId": "922c765f-341c-42e7-bc41-0c11e3ce60fa"
       }
     },
     "owner": "ava-gunns-organization"

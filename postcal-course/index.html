@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How PostCal Works</title>
+
+  <!-- Google Fonts: Bricolage Grotesque · DM Sans · JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400;1,9..40,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    :root {
+      --color-accent:       #2A7B9B;
+      --color-accent-hover: #1F6280;
+      --color-accent-light: #E4F2F7;
+      --color-accent-muted: #5A9DB8;
+    }
+  </style>
+
+  <script src="main.js" defer></script>
+</head>
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="progress-bar" id="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="nav-inner">
+      <span class="nav-title">How PostCal Works</span>
+      <div class="nav-dots" id="nav-dots" role="tablist">
+        <button class="nav-dot" data-target="module-1" data-tooltip="The Big Picture" role="tab" aria-label="Module 1: The Big Picture"></button>
+        <button class="nav-dot" data-target="module-2" data-tooltip="Meet the Cast" role="tab" aria-label="Module 2: Meet the Cast"></button>
+        <button class="nav-dot" data-target="module-3" data-tooltip="The Extraction Pipeline" role="tab" aria-label="Module 3: The Extraction Pipeline"></button>
+        <button class="nav-dot" data-target="module-4" data-tooltip="Saving to Calendar" role="tab" aria-label="Module 4: Saving to Calendar"></button>
+        <button class="nav-dot" data-target="module-5" data-tooltip="When Things Break" role="tab" aria-label="Module 5: When Things Break"></button>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+    <!-- modules/*.html content is assembled here by build.sh -->
+<section class="module" id="module-1" style="background: var(--color-bg)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ──────────────────────────────────────── -->
+    <header class="module-header animate-in">
+      <span class="module-number">01</span>
+      <h1 class="module-title">The Big Picture</h1>
+      <p class="module-subtitle">What PostCal does and the user journey traced through code.</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 1 — What is PostCal?
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-1">
+      <h2 class="screen-heading animate-in">What is PostCal?</h2>
+
+      <p class="animate-in">
+        You see a concert flyer on Instagram. You want it in your calendar.
+        Normally you would screenshot it, squint at the date, and manually type everything into a new event.
+      </p>
+      <p class="animate-in">
+        PostCal eliminates that friction. Share the Instagram post, review the pre-filled details, and save — done.
+      </p>
+
+      <!-- 3-step flow: Share → Review → Save -->
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Share</strong>
+            <p>Tap the share button on any Instagram event post and pick PostCal from the <span class="term" data-definition="A share intent is the operating system mechanism that lets one app send data (text, images, links) to another app.">share intent</span> list.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Review</strong>
+            <p>PostCal reads the image and caption, then shows you a form with the event name, date, time, and venue already filled in.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Save</strong>
+            <p>One tap writes the event straight to your device calendar. No account, no cloud, no waiting.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metaphor callout -->
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <span class="callout-title">Think of it this way</span>
+          <p>PostCal is like a personal assistant who reads event flyers for you and fills out the calendar entry — you just approve it.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 2 — Follow the Data
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-2">
+      <h2 class="screen-heading animate-in">Follow the Data</h2>
+
+      <p class="animate-in">
+        When you share an Instagram post, a chain of transformations turns raw pixels and text into a calendar event. Step through the animation below to see each handoff.
+      </p>
+
+      <div class="flow-animation animate-in"
+           id="flow-module1"
+           data-steps='[
+             {"label":"Instagram sends the post URL, caption text, and image to PostCal via the share sheet.","highlight":"flow-instagram","packet":true,"from":"instagram","to":"share-intent"},
+             {"label":"The share intent delivers both the caption text and the image into the app.","highlight":"flow-share-intent","packet":true,"from":"share-intent","to":"ocr-engine"},
+             {"label":"PostCal reads the caption for metadata: links, descriptions, and raw text.","highlight":"flow-share-intent"},
+             {"label":"The OCR engine scans the image and extracts any text burned into the picture.","highlight":"flow-ocr-engine","packet":true,"from":"ocr-engine","to":"parser"},
+             {"label":"Both text sources get merged into one combined string for analysis.","highlight":"flow-parser"},
+             {"label":"Parsers extract structured fields: event name, date, time, and venue.","highlight":"flow-parser","packet":true,"from":"parser","to":"review-screen"},
+             {"label":"The review screen shows pre-filled form fields so the user can verify or edit.","highlight":"flow-review-screen","packet":true,"from":"review-screen","to":"calendar"},
+             {"label":"User taps Save and the event is written to the device calendar. Done!","highlight":"flow-calendar"}
+           ]'>
+
+        <!-- Actors row -->
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-instagram">
+            <div class="flow-actor-icon">📱</div>
+            <span>Instagram</span>
+          </div>
+          <div class="flow-actor" id="flow-share-intent">
+            <div class="flow-actor-icon">📨</div>
+            <span>Share Intent</span>
+          </div>
+          <div class="flow-actor" id="flow-ocr-engine">
+            <div class="flow-actor-icon">👁️</div>
+            <span>OCR Engine</span>
+          </div>
+          <div class="flow-actor" id="flow-parser">
+            <div class="flow-actor-icon">🔍</div>
+            <span>Parser</span>
+          </div>
+          <div class="flow-actor" id="flow-review-screen">
+            <div class="flow-actor-icon">📋</div>
+            <span>Review Screen</span>
+          </div>
+          <div class="flow-actor" id="flow-calendar">
+            <div class="flow-actor-icon">📅</div>
+            <span>Calendar</span>
+          </div>
+        </div>
+
+        <!-- Animated packet -->
+        <div class="flow-packet"></div>
+
+        <!-- Step label -->
+        <div class="flow-step-label">Click "Next Step" to begin</div>
+
+        <!-- Controls -->
+        <div class="flow-controls">
+          <button class="btn btn-primary flow-next-btn">Next Step</button>
+          <button class="btn flow-reset-btn">Reset</button>
+          <span class="flow-progress">Step 0 / 8</span>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🔑</span>
+        <div class="callout-content">
+          <span class="callout-title">Two text sources, one result</span>
+          <p>The caption <span class="term" data-definition="Metadata is data about data — in this case, the text, hashtags, and links Instagram attaches to a post, separate from the image pixels.">metadata</span> and the <span class="term" data-definition="OCR (Optical Character Recognition) is a technology that reads text from images — converting pixels of letters into actual text characters a computer can understand.">OCR</span> output are merged before parsing. This means PostCal catches event details whether they appear in the caption or burned into the image itself.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 3 — The Tech Behind It
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-3">
+      <h2 class="screen-heading animate-in">The Tech Behind It</h2>
+
+      <p class="animate-in">
+        PostCal is built with a focused stack of libraries, each handling one job. Every piece runs on the device — nothing leaves the phone.
+      </p>
+
+      <div class="pattern-cards stagger-children animate-in">
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">⚛️</div>
+          <div class="pattern-title"><span class="term" data-definition="React Native is a framework that lets you build native mobile apps for iOS and Android using JavaScript and React components instead of platform-specific languages.">React Native</span> / <span class="term" data-definition="Expo is a platform and set of tools built around React Native that simplifies building, deploying, and updating mobile apps without needing Xcode or Android Studio for most tasks.">Expo</span></div>
+          <p class="pattern-desc">The app framework. Write once in JavaScript, run natively on iOS and Android.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-info-light); color: var(--color-info);">🔷</div>
+          <div class="pattern-title"><span class="term" data-definition="TypeScript is a superset of JavaScript that adds static type annotations, catching type errors at build time instead of at runtime.">TypeScript</span></div>
+          <p class="pattern-desc">The language. Adds type safety on top of JavaScript so bugs surface at build time, not in production.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #F3E8FF; color: #7B6DAA;">👁️</div>
+          <div class="pattern-title">expo-text-extractor</div>
+          <p class="pattern-desc">The OCR engine. Uses on-device vision <span class="term" data-definition="An API (Application Programming Interface) is a set of rules that lets one piece of software talk to another — like a menu that lists what you can order from a service.">API</span>s to read text from images without sending anything to the cloud.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-success-light); color: var(--color-success);">📆</div>
+          <div class="pattern-title">chrono-node</div>
+          <p class="pattern-desc">The date <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured data from it — like finding a date inside a sentence.">parser</span>. Understands natural language dates like &ldquo;next Friday at 8pm&rdquo; and converts them to real timestamps.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #FFF3E0; color: #D4A843;">📅</div>
+          <div class="pattern-title">expo-calendar</div>
+          <p class="pattern-desc">The calendar writer. An <span class="term" data-definition="An SDK (Software Development Kit) is a collection of tools, libraries, and documentation that helps developers build apps for a specific platform or service.">SDK</span> module that writes events directly to the native iOS or Android calendar.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">🧠</div>
+          <div class="pattern-title"><span class="term" data-definition="React Context is a built-in React feature for sharing state across many components without passing props through every level of the tree — like a bulletin board any component can read.">React Context</span></div>
+          <p class="pattern-desc">The state manager. Shares extracted event data across every screen without prop-drilling.</p>
+        </div>
+      </div>
+
+      <!-- Why on-device -->
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">🔒</span>
+        <div class="callout-content">
+          <span class="callout-title">Why everything runs on-device</span>
+          <p>Privacy: your Instagram data never leaves your phone. Cost: no servers to pay for. Reliability: works offline, in airplane mode, with zero latency. This is the core design principle behind every technical choice in PostCal.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 4 — Quiz
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-1-4">
+      <h2 class="screen-heading animate-in">Check Your Understanding</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module1">
+
+        <!-- Q1 -->
+        <div class="quiz-question-block"
+             data-correct="b"
+             data-explanation-right="PostCal first extracts text from the caption and runs OCR on the image before doing anything else."
+             data-explanation-wrong="PostCal needs to read the content before it can save anything. The first step is always text extraction.">
+          <p class="quiz-question">A user shares an Instagram post of a concert flyer. What does PostCal do FIRST with the shared content?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Save it to calendar immediately
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Extract text from caption and image
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Ask the user to type the event details
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Send it to a server for processing
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question-block"
+             data-correct="b"
+             data-explanation-right="On-device processing means better privacy, zero hosting costs, and full offline support."
+             data-explanation-wrong="The real reasons are privacy, cost savings, and offline reliability — not platform rules or laziness.">
+          <p class="quiz-question">Why does PostCal run entirely on-device instead of using a cloud service?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Cloud services are too slow
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Privacy, no costs, and works offline
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Apple requires it
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The developer was too lazy to build a backend
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question-block"
+             data-correct="c"
+             data-explanation-right="PostCal gracefully degrades — if it cannot find a date, it still shows the form so the user can fill in the blanks manually."
+             data-explanation-wrong="PostCal never crashes or deletes data. It shows the form with empty fields and lets the user type the missing info.">
+          <p class="quiz-question">What happens if PostCal cannot find a date in the shared content?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app crashes
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It asks the user to re-share
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It shows the form with empty fields so the user can type it
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It deletes the event
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz controls -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module1')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module1')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section class="module" id="module-2" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ─────────────────────────────────────── -->
+    <div class="module-header animate-in">
+      <span class="module-number">02</span>
+      <h2 class="module-title">Meet the Cast</h2>
+      <p class="module-subtitle">Every app is a team effort. Let's meet the key players that make PostCal tick.</p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 1 — The Cast of Characters
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">The Cast of Characters</h3>
+
+      <p class="animate-in">PostCal is made of small, focused <span class="term" data-definition="A reusable, self-contained piece of UI or logic in a React app. Components can be composed together like building blocks.">components</span> that each own one job. Here are the five you'll see most often.</p>
+
+      <div class="icon-rows stagger-children">
+
+        <!-- Actor 1 — ExtractionContext -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-1); color: white;">EC</div>
+          <div>
+            <strong style="color: var(--color-actor-1);">ExtractionContext &mdash; "The shared brain"</strong>
+            <p>A <span class="term" data-definition="React Context is a way to pass data through the component tree without manually threading props at every level. It acts like a global variable scoped to a subtree.">React Context</span> <span class="term" data-definition="A provider is a component that wraps part of the tree and makes shared data available to all descendants via React Context.">provider</span> that holds all shared <span class="term" data-definition="State is data that can change over time. When state updates, React re-renders the affected components to reflect the new data.">state</span>&mdash;the shared content, extraction results, user edits, and the current status (<code>idle</code> &rarr; <code>extracting</code> &rarr; <code>ready</code> &rarr; <code>saving</code> &rarr; <code>saved</code>).</p>
+          </div>
+        </div>
+
+        <!-- Actor 2 — Review Screen -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-2); color: white;">RS</div>
+          <div>
+            <strong style="color: var(--color-actor-2);">Review Screen &mdash; "The command center"</strong>
+            <p>The most complex screen. It receives share data, kicks off the extraction <span class="term" data-definition="A pipeline is a sequence of processing steps chained together, where each step's output feeds into the next.">pipeline</span>, displays the editable form, and handles the save action.</p>
+          </div>
+        </div>
+
+        <!-- Actor 3 — Extraction Pipeline -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-3); color: white;">EP</div>
+          <div>
+            <strong style="color: var(--color-actor-3);">Extraction Pipeline &mdash; "The workhorse"</strong>
+            <p>Orchestrates <span class="term" data-definition="OCR (Optical Character Recognition) is a technology that reads text from images. PostCal uses it to extract event details from Instagram screenshots.">OCR</span>, text parsing, and result merging. Lives in <code>lib/extraction/run-pipeline.ts</code> and does all the heavy data lifting.</p>
+          </div>
+        </div>
+
+        <!-- Actor 4 — Root Layout -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-4); color: white;">RL</div>
+          <div>
+            <strong style="color: var(--color-actor-4);">Root Layout &mdash; "The stage manager"</strong>
+            <p>Loads fonts, sets up the theme, wraps everything in providers, and bridges <span class="term" data-definition="A share intent is an OS-level action where one app sends data (text, images, URLs) to another app. On Android and iOS, this is the 'Share' sheet.">share intents</span> into <span class="term" data-definition="Navigation is the system that moves users between screens in a mobile app. In Expo Router, it's file-based: each file in app/ becomes a route.">navigation</span> events.</p>
+          </div>
+        </div>
+
+        <!-- Actor 5 — Calendar Module -->
+        <div class="icon-row animate-in">
+          <div class="icon-circle" style="background: var(--color-actor-5); color: white;">CM</div>
+          <div>
+            <strong style="color: var(--color-actor-5);">Calendar Module &mdash; "The finish line"</strong>
+            <p>The last step. Requests calendar permission, creates the event, and returns the new event ID. Lives in <code>lib/calendar/</code>.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pit crew metaphor -->
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">&#9881;</span>
+        <div class="callout-content">
+          <span class="callout-title">Think of it like a pit crew</span>
+          <p>Each person has one job, and they work together in a precise sequence to get the car back on the track. No single component tries to do everything&mdash;they hand off cleanly.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 2 — How They Talk
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">How They Talk</h3>
+
+      <p class="animate-in">Watch the cast pass data from share to save. Each message is a real step in the PostCal flow.</p>
+
+      <div class="chat-window animate-in" id="chat-module2">
+        <div class="chat-messages">
+
+          <!-- 1. Root Layout -->
+          <div class="chat-message" data-sender="actor-4" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-4);">RL</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-4);">Root Layout</span>
+              <p>Heads up everyone &mdash; incoming share intent from Instagram!</p>
+            </div>
+          </div>
+
+          <!-- 2. Review Screen -->
+          <div class="chat-message" data-sender="actor-2" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-2);">RS</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2);">Review Screen</span>
+              <p>Got it. Let me grab the shared content and kick off extraction.</p>
+            </div>
+          </div>
+
+          <!-- 3. Extraction Pipeline -->
+          <div class="chat-message" data-sender="actor-3" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-3);">EP</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-3);">Extraction Pipeline</span>
+              <p>On it. Running OCR on the image and parsing the caption text...</p>
+            </div>
+          </div>
+
+          <!-- 4. Extraction Pipeline (done) -->
+          <div class="chat-message" data-sender="actor-3" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-3);">EP</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-3);">Extraction Pipeline</span>
+              <p>Done! Found: <strong>DJ Night</strong>, March 28, 10 PM, The Warehouse.</p>
+            </div>
+          </div>
+
+          <!-- 5. ExtractionContext -->
+          <div class="chat-message" data-sender="actor-1" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-1);">EC</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-1);">ExtractionContext</span>
+              <p>Stored. Status is now <code>ready</code>. Review Screen, show the form.</p>
+            </div>
+          </div>
+
+          <!-- 6. Review Screen (form) -->
+          <div class="chat-message" data-sender="actor-2" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-2);">RS</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2);">Review Screen</span>
+              <p>Form is showing. User edited the venue to add the full address.</p>
+            </div>
+          </div>
+
+          <!-- 7. Review Screen (save) -->
+          <div class="chat-message" data-sender="actor-2" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-2);">RS</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-2);">Review Screen</span>
+              <p>User tapped Save. Requesting calendar permission...</p>
+            </div>
+          </div>
+
+          <!-- 8. Calendar Module -->
+          <div class="chat-message" data-sender="actor-5" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-5);">CM</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-5);">Calendar Module</span>
+              <p>Permission granted. Event created! ID: <code>abc123</code>.</p>
+            </div>
+          </div>
+
+          <!-- 9. ExtractionContext (saved) -->
+          <div class="chat-message" data-sender="actor-1" style="display:none;">
+            <div class="chat-avatar" style="background: var(--color-actor-1);">EC</div>
+            <div class="chat-bubble">
+              <span class="chat-sender" style="color: var(--color-actor-1);">ExtractionContext</span>
+              <p>Status &rarr; <code>saved</code>. Navigating to Success screen.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="chat-typing" style="display:none;">
+          <div class="chat-avatar" id="chat-module2-typing-avatar" style="background: var(--color-actor-1);">?</div>
+          <div class="chat-typing-dots">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="chat-controls">
+          <button class="btn chat-next-btn">Next Message</button>
+          <button class="btn chat-all-btn">Play All</button>
+          <button class="btn chat-reset-btn">Reset</button>
+          <span class="chat-progress">0 / 9 messages</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 3 — The File Map
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">The File Map</h3>
+
+      <p class="animate-in">Here is the <span class="term" data-definition="A file tree is a visual representation of how files and folders are organized inside a project. It shows the hierarchy at a glance.">file tree</span> for the PostCal project. Each folder groups files by purpose.</p>
+
+      <div class="file-tree animate-in">
+
+        <!-- app/ -->
+        <div class="ft-folder">
+          <span class="ft-name">app/</span>
+          <span class="ft-desc">&mdash; Screens and <span class="term" data-definition="A route is a URL path that maps to a specific screen. In Expo Router, every file inside app/ automatically becomes a route.">routing</span></span>
+          <div class="ft-children">
+            <div class="ft-file">
+              <span class="ft-name">_layout.tsx</span>
+              <span class="ft-desc">&mdash; Root layout with <span class="term" data-definition="In TypeScript/React, providers are wrapper components that supply shared data (like theme or state) to all children via Context.">providers</span></span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">index.tsx</span>
+              <span class="ft-desc">&mdash; Home screen (instructions)</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">review.tsx</span>
+              <span class="ft-desc">&mdash; Event review and edit form</span>
+            </div>
+            <div class="ft-file">
+              <span class="ft-name">success.tsx</span>
+              <span class="ft-desc">&mdash; Confirmation screen</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- lib/ -->
+        <div class="ft-folder">
+          <span class="ft-name">lib/</span>
+          <span class="ft-desc">&mdash; Business logic</span>
+          <div class="ft-children">
+            <div class="ft-folder">
+              <span class="ft-name">extraction/</span>
+              <span class="ft-desc">&mdash; OCR and parsing pipeline</span>
+            </div>
+            <div class="ft-folder">
+              <span class="ft-name">calendar/</span>
+              <span class="ft-desc">&mdash; Calendar integration</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- components/ -->
+        <div class="ft-folder">
+          <span class="ft-name">components/</span>
+          <span class="ft-desc">&mdash; Reusable UI pieces</span>
+        </div>
+
+        <!-- context/ -->
+        <div class="ft-folder">
+          <span class="ft-name">context/</span>
+          <span class="ft-desc">&mdash; Global state (ExtractionContext)</span>
+        </div>
+
+        <!-- theme/ -->
+        <div class="ft-folder">
+          <span class="ft-name">theme/</span>
+          <span class="ft-desc">&mdash; Design system (colors, fonts, spacing)</span>
+        </div>
+
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">&#128270;</span>
+        <div class="callout-content">
+          <span class="callout-title">Notice the pattern</span>
+          <p><code>app/</code> holds screens, <code>lib/</code> holds logic, <code>context/</code> holds state. <span class="term" data-definition="TypeScript is a typed superset of JavaScript. It adds static types so the compiler can catch errors before the code runs.">TypeScript</span> files end in <code>.tsx</code> (UI) or <code>.ts</code> (logic). Keeping these apart makes changes predictable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SCREEN 4 — Quiz
+         ══════════════════════════════════════════════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Check Your Understanding</h3>
+
+      <div class="quiz-container animate-in" id="quiz-module2">
+
+        <!-- Q1 -->
+        <div class="quiz-question-block" data-correct="c" data-explanation-right="The Review Screen (<code>app/review.tsx</code>) renders the event form, so that's where you'd add a new field." data-explanation-wrong="The form lives in <code>app/review.tsx</code> &mdash; the Review Screen is the command center for editing event data.">
+          <p class="quiz-question">1. You want to add a Notes field to the event form. Which file would you modify?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>_layout.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>run-pipeline.ts</code>
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>review.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>extraction-context.tsx</code>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question-block" data-correct="b" data-explanation-right="Date parsing logic lives in the extraction folder at <code>lib/extraction/parse-date-time.ts</code>." data-explanation-wrong="Parsing happens in <code>lib/extraction/</code>. The file <code>parse-date-time.ts</code> is where date logic lives &mdash; not in the screen or context layer.">
+          <p class="quiz-question">2. The extraction pipeline found the wrong date. Where would you look to fix the date parsing logic?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>app/review.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>lib/extraction/parse-date-time.ts</code>
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>context/extraction-context.tsx</code>
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> <code>app/success.tsx</code>
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question-block" data-correct="b" data-explanation-right="ExtractionContext is the shared brain &mdash; it holds state like extraction results, user edits, and the current status." data-explanation-wrong="ExtractionContext doesn't render UI, write to the calendar, or read images. It holds shared state that other <span class='term' data-definition='Props (short for properties) are read-only inputs passed from a parent component to a child component in React.'>components</span> read from and write to.">
+          <p class="quiz-question">3. What does ExtractionContext do?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It renders the UI
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It holds shared state like extraction results and status
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It writes events to the calendar
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It reads text from images
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz buttons -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module2')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module2')">Reset</button>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+<section class="module" id="module-3" style="background: var(--color-bg)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ──────────────────────────────────────── -->
+    <header class="module-header animate-in">
+      <span class="module-number">03</span>
+      <h1 class="module-title">The Extraction Pipeline</h1>
+      <p class="module-subtitle">Deep dive into how PostCal reads and understands shared content.</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 1 — The Assembly Line
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-1">
+      <h2 class="screen-heading animate-in">The Assembly Line</h2>
+
+      <p class="animate-in">
+        The extraction <span class="term" data-definition="A pipeline is a sequence of processing stages where the output of one stage becomes the input of the next, like stations on an assembly line.">pipeline</span> is like a team of translators working on a foreign document. Each specialist handles one part — dates, names, addresses — and their work gets combined into a complete translation.
+      </p>
+      <p class="animate-in">
+        No single stage does everything. Instead, seven focused steps each do one job well, then pass their results forward.
+      </p>
+
+      <!-- 7 pipeline stages -->
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>parseShareIntent(shareIntent)</strong>
+            <p>Extracts the raw text, <span class="term" data-definition="A URI (Uniform Resource Identifier) that points to an image file stored on the device. It tells the app where to find the picture.">imageUri</span>, and <span class="term" data-definition="A MIME type describes the format of a file, such as image/jpeg for a JPEG photo or text/plain for plain text.">mimeType</span> from the incoming share data.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>extractTextFromImage(imageUri)</strong>
+            <p>Runs on-device <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> via expo-text-extractor (<span class="term" data-definition="ML Kit is Google's on-device machine learning library for Android. It provides ready-to-use models for text recognition, face detection, and more.">ML Kit</span> on Android, <span class="term" data-definition="Apple Vision is Apple's on-device computer vision framework for iOS and macOS. It can recognize text, faces, barcodes, and objects in images.">Apple Vision</span> on iOS). Returns joined text blocks or <span class="term" data-definition="null is a special value meaning 'nothing' or 'no value'. It signals that a result is intentionally empty or missing.">null</span>.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>mergeExtractionSources(metadataText, ocrText)</strong>
+            <p>Combines caption text and <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> text with a separator <code>\n---\n</code> so downstream <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parsers</span> can distinguish the two sources.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>parseDateTime(rawText)</strong>
+            <p>Uses <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> to parse natural language dates. Returns <code>{ date: &quot;YYYY-MM-DD&quot;, time: &quot;HH:MM&quot; }</code>.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <strong>parseEventName(rawText)</strong>
+            <p>Finds the first non-URL line of text. Prioritizes the <span class="term" data-definition="Metadata is data about data — in PostCal, it refers to the caption text and other information that Instagram attaches to a shared post, as opposed to the image pixels themselves.">metadata</span> section over <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> text.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">6</div>
+          <div class="step-body">
+            <strong>parseVenue(rawText)</strong>
+            <p>Applies <span class="term" data-definition="A regex (regular expression) is a pattern-matching language used to search text for specific formats, like phone numbers, email addresses, or street addresses.">regex</span> patterns to find venues: street addresses, &quot;at Venue&quot;, &quot;@ Venue&quot;, and labeled fields like <code>venue:</code>, <code>location:</code>, <code>where:</code>.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <div class="step-num">7</div>
+          <div class="step-body">
+            <strong>buildEventFields(results)</strong>
+            <p>Assembles the final ExtractionResult with <span class="term" data-definition="A confidence score is a number (usually 0 to 1) that indicates how sure the system is about a particular result. Higher means more confident.">confidence scores</span> for each extracted field.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 2 — Reading the Image
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-2">
+      <h2 class="screen-heading animate-in">Reading the Image</h2>
+
+      <p class="animate-in">
+        This is the <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> that turns image pixels into readable text. Walk through each line of real code alongside its plain English translation.
+      </p>
+
+      <!-- Translation block: extractTextFromImage -->
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">TypeScript</span>
+<code><span class="code-line"><span class="code-keyword">export</span> <span class="code-keyword">async</span> <span class="code-keyword">function</span> <span class="code-function">extractTextFromImage</span>(</span>
+<span class="code-line">  <span class="code-property">imageUri</span>: <span class="code-keyword">string</span></span>
+<span class="code-line">): <span class="code-keyword">Promise</span>&lt;<span class="code-keyword">string</span> | <span class="code-keyword">null</span>&gt; {</span>
+<span class="code-line">  <span class="code-keyword">try</span> {</span>
+<span class="code-line">    <span class="code-keyword">const</span> {</span>
+<span class="code-line">      <span class="code-property">extractTextFromImage</span>: <span class="code-property">extractText</span>,</span>
+<span class="code-line">      <span class="code-property">isSupported</span>,</span>
+<span class="code-line">    } <span class="code-operator">=</span> <span class="code-function">require</span>(<span class="code-string">'expo-text-extractor'</span>);</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="code-keyword">if</span> (<span class="code-operator">!</span><span class="code-property">isSupported</span>) {</span>
+<span class="code-line">      <span class="code-keyword">return</span> <span class="code-keyword">null</span>;</span>
+<span class="code-line">    }</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="code-keyword">const</span> <span class="code-property">blocks</span> <span class="code-operator">=</span> <span class="code-keyword">await</span> <span class="code-function">extractText</span>(<span class="code-property">imageUri</span>);</span>
+<span class="code-line">    <span class="code-keyword">const</span> <span class="code-property">joined</span> <span class="code-operator">=</span> <span class="code-property">blocks</span>.<span class="code-function">join</span>(<span class="code-string">'\n'</span>).<span class="code-function">trim</span>();</span>
+<span class="code-line"></span>
+<span class="code-line">    <span class="code-keyword">return</span> <span class="code-property">joined</span> <span class="code-operator">||</span> <span class="code-keyword">null</span>;</span>
+<span class="code-line">  } <span class="code-keyword">catch</span> {</span>
+<span class="code-line">    <span class="code-keyword">return</span> <span class="code-keyword">null</span>;</span>
+<span class="code-line">  }</span>
+<span class="code-line">}</span></code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <div class="tl">Define a <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> that takes an image file path and <span class="term" data-definition="A Promise is a placeholder for a value that will arrive in the future. It represents an asynchronous operation that hasn't completed yet.">promises</span> to return text (or nothing).</div>
+            <div class="tl">Start a safety net — if anything goes wrong, we handle it gracefully.</div>
+            <div class="tl">Load the <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> library on demand (not upfront, so the app works even without it).</div>
+            <div class="tl">Check if this device supports text recognition — not all do.</div>
+            <div class="tl">If not supported, politely give up and return nothing.</div>
+            <div class="tl">Ask the <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> engine to read all text blocks from the image.</div>
+            <div class="tl">Combine all the text blocks into one <span class="term" data-definition="A string is a sequence of characters — letters, numbers, symbols — treated as text data rather than as code or numbers.">string</span>, separated by line breaks.</div>
+            <div class="tl">Return the text if we found any, otherwise return nothing.</div>
+            <div class="tl">If anything crashed, just return nothing instead of breaking the whole app.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Callout: graceful degradation -->
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🛡</span>
+        <div class="callout-content">
+          <span class="callout-title">Graceful Degradation</span>
+          <p>This pattern — <span class="term" data-definition="try/catch is a control structure that lets code attempt something risky inside the 'try' block. If it fails, the 'catch' block runs instead, preventing the whole program from crashing.">trying something</span> and returning <span class="term" data-definition="null is a special value meaning 'nothing' or 'no value'. It signals that a result is intentionally empty or missing.">null</span> instead of crashing — is called <span class="term" data-definition="Graceful degradation is a design pattern where a system continues to function (with reduced features) even when one component fails, instead of crashing entirely.">graceful degradation</span>. It means the app keeps working even when one piece fails.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 3 — Finding the Date
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-3">
+      <h2 class="screen-heading animate-in">Finding the Date</h2>
+
+      <p class="animate-in">
+        Dates in event posts come in every format imaginable — &quot;next Saturday&quot;, &quot;March 28th at 10pm&quot;, &quot;03/28/2026&quot;. The <code>parseDateTime</code> <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> delegates this hard problem to <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span>.
+      </p>
+
+      <!-- Translation block: parseDateTime -->
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">TypeScript</span>
+<code><span class="code-line"><span class="code-keyword">const</span> <span class="code-property">results</span> <span class="code-operator">=</span> <span class="code-property">chrono</span>.<span class="code-function">parse</span>(<span class="code-property">text</span>);</span>
+<span class="code-line"><span class="code-keyword">if</span> (<span class="code-property">results</span>.<span class="code-property">length</span> <span class="code-operator">===</span> <span class="code-number">0</span>) <span class="code-keyword">return</span> { <span class="code-property">date</span>: <span class="code-keyword">null</span>, <span class="code-property">time</span>: <span class="code-keyword">null</span> };</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">ref</span> <span class="code-operator">=</span> <span class="code-property">results</span>[<span class="code-number">0</span>];</span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">start</span> <span class="code-operator">=</span> <span class="code-property">ref</span>.<span class="code-property">start</span>;</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">date</span> <span class="code-operator">=</span> [</span>
+<span class="code-line">  <span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'year'</span>),</span>
+<span class="code-line">  <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'month'</span>)).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">  <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'day'</span>)).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">].<span class="code-function">join</span>(<span class="code-string">'-'</span>);</span>
+<span class="code-line"></span>
+<span class="code-line"><span class="code-keyword">const</span> <span class="code-property">time</span> <span class="code-operator">=</span> <span class="code-property">start</span>.<span class="code-function">isCertain</span>(<span class="code-string">'hour'</span>)</span>
+<span class="code-line">  <span class="code-operator">?</span> [</span>
+<span class="code-line">      <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'hour'</span>)).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">      <span class="code-function">String</span>(<span class="code-property">start</span>.<span class="code-function">get</span>(<span class="code-string">'minute'</span>) <span class="code-operator">??</span> <span class="code-number">0</span>).<span class="code-function">padStart</span>(<span class="code-number">2</span>, <span class="code-string">'0'</span>),</span>
+<span class="code-line">    ].<span class="code-function">join</span>(<span class="code-string">':'</span>)</span>
+<span class="code-line">  <span class="code-operator">:</span> <span class="code-keyword">null</span>;</span></code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <div class="tl">Ask <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> to find any dates or times mentioned in the text.</div>
+            <div class="tl">If it found nothing, give up — no date, no time.</div>
+            <div class="tl">Take the first date it found (usually the most prominent one).</div>
+            <div class="tl">Pull out the specific start date/time details.</div>
+            <div class="tl">Build a clean date <span class="term" data-definition="A string is a sequence of characters — letters, numbers, symbols — treated as text data rather than as code or numbers.">string</span> like <code>2026-03-28</code> from year, month, day.</div>
+            <div class="tl">Pad single-digit months and days with a zero (3 becomes 03) using <span class="term" data-definition="padStart is a JavaScript string method that adds characters to the beginning of a string until it reaches a desired length. padStart(2, '0') turns '3' into '03'.">padStart</span>.</div>
+            <div class="tl">Only include the time if <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> is confident it found one.</div>
+            <div class="tl">Format it as HH:MM (like <code>22:00</code> for 10 PM).</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Callout: chrono-node -->
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">📅</span>
+        <div class="callout-content">
+          <span class="callout-title">The Power of chrono-node</span>
+          <p><span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span> understands natural language dates — &quot;next Saturday at 8pm&quot;, &quot;March 28&quot;, &quot;tomorrow evening&quot;. It is one of the most powerful date <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parsing</span> libraries available.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 4 — Merging and Matching
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-4">
+      <h2 class="screen-heading animate-in">Merging and Matching</h2>
+
+      <p class="animate-in">
+        Before the <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parsers</span> can do their work, two text sources need to become one. The <code>mergeExtractionSources</code> <span class="term" data-definition="A function is a reusable block of code that performs a specific task. You give it inputs, it does work, and it returns an output.">function</span> joins them with a clear divider.
+      </p>
+
+      <!-- Merge visual -->
+      <div class="flow-animation animate-in" style="pointer-events: none;">
+        <div class="flow-actors" style="justify-content: center; gap: var(--space-8);">
+          <div class="flow-actor" style="flex: 0 0 auto;">
+            <div class="flow-actor-icon" style="border-color: var(--color-actor-2); width: auto; padding: 0 var(--space-4); font-size: var(--text-sm); font-family: var(--font-mono);">📝</div>
+            <span><span class="term" data-definition="Metadata is data about data — in PostCal, it refers to the caption text and other information that Instagram attaches to a shared post, as opposed to the image pixels themselves.">Metadata</span> Text</span>
+            <div style="background: var(--color-bg-warm); border-radius: var(--radius-sm); padding: var(--space-3); font-size: var(--text-sm); color: var(--color-text-secondary); max-width: 200px; text-align: center; margin-top: var(--space-2);">
+              &quot;DJ Night at Warehouse<br>Next Saturday 10pm&quot;
+            </div>
+          </div>
+          <div style="font-size: var(--text-2xl); color: var(--color-accent); font-weight: 700; align-self: center;">+</div>
+          <div class="flow-actor" style="flex: 0 0 auto;">
+            <div class="flow-actor-icon" style="border-color: var(--color-actor-3); width: auto; padding: 0 var(--space-4); font-size: var(--text-sm); font-family: var(--font-mono);">👁</div>
+            <span><span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> Text</span>
+            <div style="background: var(--color-bg-warm); border-radius: var(--radius-sm); padding: var(--space-3); font-size: var(--text-sm); color: var(--color-text-secondary); max-width: 200px; text-align: center; margin-top: var(--space-2);">
+              &quot;123 Industrial Blvd<br>Doors 9pm / Show 10pm&quot;
+            </div>
+          </div>
+        </div>
+        <!-- Arrow down -->
+        <div style="text-align: center; font-size: var(--text-2xl); color: var(--color-text-muted); margin: var(--space-4) 0;">&#8595;</div>
+        <!-- Merged result -->
+        <div style="background: var(--color-bg-code); border-radius: var(--radius-md); padding: var(--space-5); font-family: var(--font-mono); font-size: var(--text-sm); color: #CDD6F4; max-width: 400px; margin: 0 auto; line-height: 1.8;">
+          <span class="code-string">DJ Night at Warehouse</span><br>
+          <span class="code-string">Next Saturday 10pm</span><br>
+          <span class="code-comment">---</span><br>
+          <span class="code-string">123 Industrial Blvd</span><br>
+          <span class="code-string">Doors 9pm / Show 10pm</span>
+        </div>
+        <div style="text-align: center; margin-top: var(--space-3);">
+          <span style="font-size: var(--text-xs); font-family: var(--font-mono); color: var(--color-text-muted); letter-spacing: 0.05em;">MERGED OUTPUT — the <code>---</code> separator lets parsers know where caption ends and image text begins</span>
+        </div>
+      </div>
+
+      <p class="animate-in" style="margin-top: var(--space-8);">
+        Once merged, <code>parseVenue</code> scans the combined text using <span class="term" data-definition="A regex (regular expression) is a pattern-matching language used to search text for specific formats, like phone numbers, email addresses, or street addresses.">regex</span> patterns in priority order. The most specific patterns win.
+      </p>
+
+      <!-- Venue pattern cards -->
+      <div class="pattern-cards stagger-children animate-in">
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-success-light); color: var(--color-success);">1</div>
+          <div class="pattern-title">Street Address</div>
+          <p class="pattern-desc"><code>123 Main St</code> — highest priority. A numbered street address is the most reliable indicator of a physical venue.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-info-light); color: var(--color-info);">2</div>
+          <div class="pattern-title">&quot;at Venue&quot;</div>
+          <p class="pattern-desc"><code>at The Warehouse</code> — second priority. The word &quot;at&quot; before a capitalized name strongly suggests a venue.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">3</div>
+          <div class="pattern-title">&quot;@ Venue&quot;</div>
+          <p class="pattern-desc"><code>@ Brooklyn Bowl</code> — third priority. The @ symbol is informal but commonly used for venues in social media posts.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-error-light); color: var(--color-error);">4</div>
+          <div class="pattern-title">Labeled Field</div>
+          <p class="pattern-desc"><code>venue: Madison Square Garden</code> — fourth priority. Explicit labels like <code>venue:</code>, <code>location:</code>, or <code>where:</code> are clear but less common.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 5 — Quiz
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-3-5">
+      <h2 class="screen-heading animate-in">Check Your Understanding</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module3">
+
+        <!-- Question 1 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="parseDateTime hands the text to chrono-node, which understands natural language dates like 'next Saturday 10pm'."
+             data-explanation-wrong="parseDateTime is the stage that uses chrono-node to interpret natural language dates and times from the text.">
+          <div class="quiz-question">An Instagram post says &quot;DJ Night at Warehouse, next Saturday 10pm&quot;. Which <span class="term" data-definition="A parser is a piece of code that reads unstructured text and extracts structured, meaningful data from it.">parser</span> finds &quot;next Saturday 10pm&quot;?</div>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              parseVenue
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              parseEventName
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              parseDateTime using <span class="term" data-definition="chrono-node is a JavaScript library that understands natural language dates and times — phrases like 'next Saturday at 8pm' or 'March 28' get parsed into structured date objects.">chrono-node</span>
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              extractTextFromImage
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="Thanks to graceful degradation, extractTextFromImage returns null when OCR fails, and the pipeline continues with whatever caption text is available."
+             data-explanation-wrong="The OCR function uses graceful degradation — it returns null on failure instead of crashing, so the pipeline continues with just the caption text.">
+          <div class="quiz-question">The <span class="term" data-definition="OCR (Optical Character Recognition) is technology that reads text from images — it turns pixels that look like letters into actual editable text.">OCR</span> engine fails on a blurry image. What happens to the rest of the <span class="term" data-definition="A pipeline is a sequence of processing stages where the output of one stage becomes the input of the next, like stations on an assembly line.">pipeline</span>?</div>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              The whole app crashes
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              The pipeline stops and shows an error
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              The pipeline continues with just the caption text
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              It retries the OCR 3 times
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-question-block" data-correct="b"
+             data-explanation-right="Street addresses contain a number and a street name — they are very specific and almost always indicate a real physical location. Vaguer patterns like 'at Venue' could match non-venue phrases."
+             data-explanation-wrong="Street addresses are checked first because they are the most specific and reliable indicators of a real venue. A pattern like '123 Main St' is almost never a false positive.">
+          <div class="quiz-question">Why does <code>parseVenue</code> check for street addresses BEFORE checking for &quot;at Venue&quot; patterns?</div>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              Street addresses are faster to find
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              Street addresses are more specific and reliable indicators of a real venue
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              It is alphabetical order
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span>
+              There is no particular reason
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz buttons -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module3')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module3')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section class="module" id="module-4" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+
+    <!-- ═══════════════════ MODULE HEADER ═══════════════════ -->
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h2 class="module-title">Saving to Calendar</h2>
+      <p class="module-subtitle">How PostCal goes from extracted data to a real calendar event on your phone.</p>
+    </header>
+
+    <!-- ═══════════════════ SCREEN 1 ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">User Edits Trump Everything</h3>
+
+      <p class="animate-in">The extraction pipeline is like a secretary who fills out a draft — but the boss (the user) has final say. Any edit the user makes on the review screen <strong>overrides</strong> what the AI extracted.</p>
+
+      <p class="animate-in">PostCal resolves every field through a three-tier <span class="term" data-definition="A chain where each level is only consulted if the previous one has no value. The first non-empty value wins.">precedence chain</span>. The first non-empty value wins.</p>
+
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>User Edit (highest priority)</strong>
+            <p>Whatever the user typed on the review screen. If they changed it, that value is final.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>Extraction Result (fallback)</strong>
+            <p>What the AI pipeline pulled from the Instagram post. Used only if the user did not edit the field.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <strong>Default Value (last resort)</strong>
+            <p>"Untitled Event" for the name, today at 7:00 PM for the time, and empty string for the location.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">Code</span>
+<code><span class="code-keyword">const</span> title = userEdits.<span class="code-property">eventName</span>
+  <span class="code-operator">??</span> extraction<span class="code-operator">?.</span><span class="code-property">eventName</span>
+  <span class="code-operator">??</span> <span class="code-string">'Untitled Event'</span>;
+
+<span class="code-keyword">const</span> location = userEdits.<span class="code-property">venue</span>
+  <span class="code-operator">??</span> extraction<span class="code-operator">?.</span><span class="code-property">venue</span>
+  <span class="code-operator">??</span> <span class="code-string">''</span>;</code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <p class="tl">Use whatever the user typed for the event name.</p>
+            <p class="tl">If they did not edit it, use what the extraction pipeline found.</p>
+            <p class="tl">If extraction also found nothing, call it "Untitled Event".</p>
+            <p class="tl">Same logic for location — user edit, then extraction, then empty string.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">??</span>
+        <div class="callout-content">
+          <span class="callout-title">What is <span class="term" data-definition="The ?? operator in JavaScript. It returns the right-hand side only when the left-hand side is null or undefined — not for other falsy values like 0 or empty string.">??</span> (nullish coalescing)?</span>
+          <p>The <span class="term" data-definition="An operator that returns the right-hand operand when the left is null or undefined. Unlike ||, it does not treat 0 or empty string as missing."><code>??</code> operator</span> means "if the left side is <span class="term" data-definition="A value that can be null or undefined. In PostCal, user edits are nullable — they only have a value if the user actually typed something.">null or undefined</span>, use the right side instead." It lets PostCal chain fallbacks cleanly in a single expression.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SCREEN 2 ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Asking Permission</h3>
+
+      <p class="animate-in">Mobile apps cannot just write to your calendar. The <span class="term" data-definition="The underlying software (iOS or Android) that controls hardware, manages apps, and enforces security rules like permissions.">operating system</span> requires every app to request <span class="term" data-definition="An explicit grant from the user allowing an app to access a protected resource like the calendar, camera, or location. Managed and enforced by the operating system.">permission</span> first — and the user can say no.</p>
+
+      <p class="animate-in">Here is exactly what happens when the user taps "Save to Calendar."</p>
+
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>User taps "Save to Calendar"</strong>
+            <p>The button press triggers the save flow inside PostCal.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>App calls <code>requestCalendarPermission()</code></strong>
+            <p>PostCal asks the OS whether it already has calendar access, or needs to prompt the user.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <strong>First time: native dialog appears</strong>
+            <p>The OS shows its own popup: "Allow PostCal to access your calendar?" This dialog is not drawn by PostCal — it comes from iOS or Android itself.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">4</span>
+          <div class="step-body">
+            <strong>User grants permission</strong>
+            <p>The OS remembers the choice and PostCal proceeds to write the event.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">5</span>
+          <div class="step-body">
+            <strong>User denies permission</strong>
+            <p>PostCal exits the save flow silently. No crash, no retry loop — the user simply stays on the review screen.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">&#x1F512;</span>
+        <div class="callout-content">
+          <span class="callout-title">Why permissions exist</span>
+          <p>Your calendar contains private data — meetings, medical appointments, personal plans. The <span class="term" data-definition="The underlying software (iOS or Android) that controls hardware, manages apps, and enforces security rules like permissions.">operating system</span> enforces that apps must always ask before reading or writing to it. This is an OS-level rule, not something the app can skip.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SCREEN 3 ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Writing the Event</h3>
+
+      <p class="animate-in">Once permission is granted, PostCal calls <code>writeEvent</code> to create the actual calendar entry. This function talks to the <span class="term" data-definition="A set of functions provided by the operating system or a library that lets your app interact with a service — here, the device's calendar.">calendar API</span> through Expo's Calendar module.</p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">Code</span>
+<code><span class="code-keyword">const</span> defaultCalendar <span class="code-operator">=</span>
+  <span class="code-keyword">await</span> Calendar.<span class="code-function">getDefaultCalendarAsync</span>();
+<span class="code-keyword">let</span> calendarId <span class="code-operator">=</span> defaultCalendar.<span class="code-property">id</span>;
+
+<span class="code-keyword">const</span> eventId <span class="code-operator">=</span>
+  <span class="code-keyword">await</span> Calendar.<span class="code-function">createEventAsync</span>(calendarId, {
+    <span class="code-property">title</span>:     event.<span class="code-property">title</span>,
+    <span class="code-property">startDate</span>: event.<span class="code-property">startDate</span>,
+    <span class="code-property">endDate</span>:   event.<span class="code-property">endDate</span>,
+    <span class="code-property">location</span>:  event.<span class="code-property">location</span>,
+    <span class="code-property">timeZone</span>:  Intl.<span class="code-function">DateTimeFormat</span>()
+      .<span class="code-function">resolvedOptions</span>().<span class="code-property">timeZone</span>,
+  });
+
+<span class="code-keyword">return</span> eventId;</code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <p class="tl">Ask the system for the default calendar (the one you probably use most).</p>
+            <p class="tl">Grab its ID so we know <em>where</em> to save the event.</p>
+            <p class="tl">Create a new event in that calendar with all the details.</p>
+            <p class="tl">Set the title — what the user approved on the review screen.</p>
+            <p class="tl">Set when it starts and ends (default duration: 2 hours).</p>
+            <p class="tl">Set the location if we have one.</p>
+            <p class="tl">Use the <span class="term" data-definition="A named region (like 'America/New_York') that determines how UTC times are displayed locally. PostCal reads the device's timezone so calendar events show the correct local time.">timezone</span> from the device so times display correctly.</p>
+            <p class="tl">Return the new <span class="term" data-definition="A unique string the calendar system assigns to a newly created event. It serves as proof the event was saved and can be used to update or delete it later.">event ID</span> — proof it was saved successfully.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">&#x1F4F1;</span>
+        <div class="callout-content">
+          <span class="callout-title">Android vs iOS</span>
+          <p>On Android, <code>getDefaultCalendarAsync</code> might not exist. PostCal uses a <span class="term" data-definition="A backup strategy used when the primary approach fails or is unavailable. Here, if no default calendar exists, PostCal scans all calendars and picks the first writable one.">fallback</span>: it scans all calendars and picks the first writable one. On iOS, the default calendar is always available.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">&#x23F1;</span>
+        <div class="callout-content">
+          <span class="callout-title"><span class="term" data-definition="A programming pattern where the code pauses at an 'await' keyword until an asynchronous operation (a Promise) finishes, then continues with the result. It makes async code read like synchronous code.">Async/await</span> in action</span>
+          <p>Every line with <code>await</code> pauses until the <span class="term" data-definition="An object representing a value that will be available in the future. Calendar.createEventAsync returns a Promise that resolves to the new event's ID once the OS finishes writing it.">promise</span> resolves. <code>getDefaultCalendarAsync</code> waits for the OS to respond; <code>createEventAsync</code> waits for the event to be written. If either fails, the error propagates up to PostCal's error handler.</p>
+        </div>
+      </div>
+
+      <p class="animate-in">After the event is saved, PostCal shows a success screen that <strong>auto-dismisses after 2 seconds</strong>. On devices with reduced-motion preferences enabled, the dismiss animation is replaced with a simple fade to respect accessibility settings.</p>
+    </div>
+
+    <!-- ═══════════════════ SCREEN 4: QUIZ ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Check Your Understanding</h3>
+
+      <div class="quiz-container animate-in" id="quiz-module4">
+
+        <!-- Question 1 -->
+        <div class="quiz-question-block" data-correct="b"
+             data-explanation-right="User edits always take highest priority in the precedence chain. The user changed the venue, so their value wins."
+             data-explanation-wrong="User edits override extraction results. Since the user changed the venue to '450 Main St, Brooklyn', that value is what gets saved.">
+          <p class="quiz-question">A user shares an event post, then edits the venue from "Warehouse" to "450 Main St, Brooklyn". Which value gets saved to the calendar?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Warehouse
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> 450 Main St, Brooklyn
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Both, separated by a comma
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Neither — the app uses the OCR text
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="When no time is found in the shared content, PostCal defaults to 7:00 PM (19:00) — a reasonable evening time for most events."
+             data-explanation-wrong="PostCal defaults to 7:00 PM (19:00) when no time can be extracted. This was chosen as a sensible default since most shared events are evening events.">
+          <p class="quiz-question">PostCal could not find any time in the shared content. What time does the calendar event default to?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Midnight
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> 12:00 PM noon
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> 7:00 PM (19:00)
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The current time
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="PostCal handles denial gracefully. The save simply does not happen, and the user remains on the review screen with no crash or retry loop."
+             data-explanation-wrong="PostCal exits the save flow silently when permission is denied. No crash, no repeated prompts — the user stays on the review screen.">
+          <p class="quiz-question">The user denies calendar permission. What happens?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app crashes
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app keeps asking until they allow it
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The save fails silently and the user stays on the review screen
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The event is saved anyway
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+<section class="module" id="module-5" style="background: var(--color-bg)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ──────────────────────────────────────── -->
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">When Things Break</h1>
+      <p class="module-subtitle">Error handling, graceful degradation, and debugging patterns.</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 1 — The Safety Net Philosophy
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-1">
+      <h2 class="screen-heading animate-in">The Safety Net Philosophy</h2>
+
+      <p class="animate-in">
+        PostCal is built like a car with <span class="term" data-definition="A crumple zone is a structural feature designed to absorb impact energy during a collision. In software, it means isolating failures so one broken part does not take down the whole system.">crumple zones</span> — when something goes wrong, the damage is contained to one area. The <span class="term" data-definition="OCR (Optical Character Recognition) is a technology that reads text from images — converting pixels of letters into actual text characters a computer can understand.">OCR</span> can fail without taking down the parser. The parser can fail without crashing the form.
+      </p>
+      <p class="animate-in">
+        The form always works, even if every extraction returned nothing. This philosophy of <span class="term" data-definition="Graceful degradation means a system continues to function when parts of it fail, offering reduced but still usable functionality rather than crashing entirely.">graceful degradation</span> is baked into every layer.
+      </p>
+
+      <div class="pattern-cards stagger-children animate-in">
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-success-light); color: var(--color-success);">🛡️</div>
+          <div class="pattern-title"><span class="term" data-definition="Null is a special value that represents the intentional absence of any object or data. Returning null instead of throwing an error lets calling code handle missing data gracefully.">Null</span>, Not Crash</div>
+          <p class="pattern-desc">Every parser returns <span class="term" data-definition="Null is a special value that represents nothing — no data, no result. It signals that a function could not produce a value, without causing an error.">null</span> on failure, never throws. The caller simply moves on when a field is missing.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-info-light); color: var(--color-info);">🔒</div>
+          <div class="pattern-title"><span class="term" data-definition="Try/catch is a programming construct that lets you attempt risky code (try) and gracefully handle any errors that occur (catch) instead of crashing.">Try-Catch</span> Everything</div>
+          <p class="pattern-desc">Native modules like OCR and calendar are wrapped in <span class="term" data-definition="Try/catch is a control structure that attempts a block of code and, if it throws an error, runs a recovery block instead of crashing the program.">try/catch</span> blocks so platform-level failures never propagate.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #F3E8FF; color: #7B6DAA;">🔄</div>
+          <div class="pattern-title"><span class="term" data-definition="A state machine is a model where a system can be in exactly one of a finite number of states at any time, with defined rules for transitioning between them.">Status Machine</span></div>
+          <p class="pattern-desc">Clear states prevent impossible transitions. You cannot save while extracting or extract while saving.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #FFF3E0; color: #D4A843;">🚦</div>
+          <div class="pattern-title"><span class="term" data-definition="A navigation guard is a check that prevents duplicate or invalid screen transitions, typically using a ref flag that blocks the action if it is already in progress.">Navigation Guards</span></div>
+          <p class="pattern-desc"><span class="term" data-definition="A ref (short for reference) is a mutable value in React that persists across renders without causing re-renders when changed — useful for tracking flags like isNavigating.">Refs</span> prevent duplicate saves and <span class="term" data-definition="A race condition occurs when two or more operations try to run at the same time and the outcome depends on which one finishes first, often causing bugs.">race conditions</span> during screen transitions.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">🪢</div>
+          <div class="pattern-title">Graceful <span class="term" data-definition="A fallback is an alternative plan or value used when the primary approach fails — like showing an empty form when extraction returns no data.">Fallbacks</span></div>
+          <p class="pattern-desc">The empty form is always available as a last resort. Even if every extraction returned nothing, the user can type manually.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <span class="callout-title">Think of it this way</span>
+          <p>PostCal has 94 tests across 13 <span class="term" data-definition="A test suite is a collection of related tests grouped together, typically covering one module or feature of the application.">test suites</span>. But tests only catch known problems. The safety net patterns above catch the unknown ones — the blurry images, the weird date formats, the phones with broken calendar APIs.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 2 — The Status Machine
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-2">
+      <h2 class="screen-heading animate-in">The Status Machine</h2>
+
+      <p class="animate-in">
+        PostCal tracks exactly where it is in the extraction-to-save pipeline using a <span class="term" data-definition="A state machine is a model where a system can be in exactly one of a finite number of states at any time, with defined rules for transitioning between them.">state machine</span>. Step through the animation below to see each transition.
+      </p>
+
+      <div class="flow-animation animate-in"
+           id="flow-module5"
+           data-steps='[
+             {"label":"Start at Idle -- the app is waiting for a share intent from Instagram.","highlight":"flow-m5-idle"},
+             {"label":"Share received! Transition to Extracting -- the OCR and parser pipeline is running.","highlight":"flow-m5-extracting","packet":true,"from":"m5-idle","to":"m5-extracting"},
+             {"label":"Pipeline succeeds -- transition to Ready. The form shows pre-filled fields.","highlight":"flow-m5-ready","packet":true,"from":"m5-extracting","to":"m5-ready"},
+             {"label":"Pipeline fails -- transition to Error. The user sees Retry and Manual Entry buttons.","highlight":"flow-m5-error","packet":true,"from":"m5-extracting","to":"m5-error"},
+             {"label":"User taps Save -- transition to Saving. The event is being written to the calendar.","highlight":"flow-m5-saving","packet":true,"from":"m5-ready","to":"m5-saving"},
+             {"label":"Calendar write succeeds -- transition to Saved. Navigate to the success screen.","highlight":"flow-m5-saved","packet":true,"from":"m5-saving","to":"m5-saved"},
+             {"label":"Reset -- back to Idle. The share intent is cleared on background/foreground to prevent stale state.","highlight":"flow-m5-idle","packet":true,"from":"m5-saved","to":"m5-idle"}
+           ]'>
+
+        <!-- Actors row -->
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-m5-idle">
+            <div class="flow-actor-icon">💤</div>
+            <span>Idle</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-extracting">
+            <div class="flow-actor-icon">⚙️</div>
+            <span>Extracting</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-ready">
+            <div class="flow-actor-icon">✅</div>
+            <span>Ready</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-error">
+            <div class="flow-actor-icon">❌</div>
+            <span>Error</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-saving">
+            <div class="flow-actor-icon">💾</div>
+            <span>Saving</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-saved">
+            <div class="flow-actor-icon">🎉</div>
+            <span>Saved</span>
+          </div>
+        </div>
+
+        <!-- Animated packet -->
+        <div class="flow-packet"></div>
+
+        <!-- Step label -->
+        <div class="flow-step-label">Click "Next Step" to begin</div>
+
+        <!-- Controls -->
+        <div class="flow-controls">
+          <button class="btn btn-primary flow-next-btn">Next Step</button>
+          <button class="btn flow-reset-btn">Reset</button>
+          <span class="flow-progress">Step 0 / 7</span>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🔑</span>
+        <div class="callout-content">
+          <span class="callout-title">Why a state machine?</span>
+          <p>By defining exactly which states are possible and which transitions are allowed, you prevent impossible situations — like trying to save when there is nothing to save. Error recovery is built in: "Try Again" reruns the pipeline from Extracting, while "Enter Manually" jumps straight to Ready with empty fields.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">♿</span>
+        <div class="callout-content">
+          <span class="callout-title"><span class="term" data-definition="Accessibility is the practice of designing software so it can be used by people with disabilities, including those who use screen readers, have limited vision, or are sensitive to motion.">Accessibility</span> detail</span>
+          <p>The success screen checks the device <span class="term" data-definition="Reduced motion is an accessibility setting that tells apps the user prefers less animation, often because motion causes discomfort or nausea.">reduced motion</span> preference. If the user has it enabled, the celebration animation is replaced with a simple static checkmark.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 3 — Spot the Bug
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-3">
+      <h2 class="screen-heading animate-in">Spot the Bug</h2>
+
+      <p class="animate-in">
+        This save handler has a subtle bug that could cause problems in production. Click the line you think contains the issue.
+      </p>
+
+      <div class="bug-challenge animate-in">
+        <h3>Find the bug in handleSave</h3>
+        <div class="bug-code">
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="This line just defines the function -- nothing wrong here.">
+            <span class="line-num">1</span>
+            <code>const handleSave = <span class="term" data-definition="Async marks a function as asynchronous, meaning it can use await to pause execution while waiting for operations like network requests or file writes to complete.">async</span> () =&gt; {</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Setting status to saving is correct -- it disables the button to prevent double taps.">
+            <span class="line-num">2</span>
+            <code>  setStatus('saving');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Requesting permission is necessary -- good practice before writing to the calendar.">
+            <span class="line-num">3</span>
+            <code>  await requestCalendarPermission();</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Building the event object is fine -- it just combines extraction data with user edits.">
+            <span class="line-num">4</span>
+            <code>  const event = buildCalendarEvent(extraction, userEdits);</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Writing the event is the core action -- this is what saves to the calendar.">
+            <span class="line-num">5</span>
+            <code>  await writeEvent(event);</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Setting saved status is correct -- it updates the UI to reflect completion.">
+            <span class="line-num">6</span>
+            <code>  setStatus('saved');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, true)" data-explanation="Without a navigation guard, tapping Save twice quickly could trigger two navigations. PostCal prevents this with an isNavigating ref that blocks the second call. The duplicate router.replace on lines 7-8 makes this bug visible — but even a single call needs the guard.">
+            <span class="line-num">7</span>
+            <code>  router.replace('/success');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, true)" data-explanation="This is the duplicate navigation call. Without a navigation guard, tapping Save twice quickly fires two navigations. PostCal uses an isNavigating ref to block the second call and prevent this race condition.">
+            <span class="line-num">8</span>
+            <code>  router.replace('/success');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="This just closes the function -- nothing wrong here.">
+            <span class="line-num">9</span>
+            <code>};</code>
+          </div>
+        </div>
+        <div class="bug-feedback"></div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🔑</span>
+        <div class="callout-content">
+          <span class="callout-title">The fix in PostCal</span>
+          <p>PostCal wraps navigation in a <span class="term" data-definition="A navigation guard is a check that prevents duplicate or invalid screen transitions, typically using a ref flag that blocks the action if it is already in progress.">navigation guard</span> using a <span class="term" data-definition="A ref (short for reference) is a mutable value in React that persists across renders without causing re-renders when changed — useful for tracking flags like isNavigating.">ref</span>: <code>if (isNavigating.current) return;</code> followed by <code>isNavigating.current = true;</code>. This pattern ensures exactly one navigation happens, no matter how fast the user taps.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 4 — Quiz
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-4">
+      <h2 class="screen-heading animate-in">Check Your Understanding</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module5">
+
+        <!-- Q1 -->
+        <div class="quiz-question-block"
+             data-correct="c"
+             data-explanation-right="The pipeline keeps going with whatever text it has. If OCR returns null, the parser still processes the caption text. PostCal never crashes on a single failure."
+             data-explanation-wrong="PostCal does not retry or ask the user to intervene at the OCR stage. It continues with the caption text and shows whatever it could extract.">
+          <p class="quiz-question">The OCR engine returns <span class="term" data-definition="Null is a special value that represents the intentional absence of any object or data. Returning null instead of throwing an error lets calling code handle missing data gracefully.">null</span> because the image was too blurry. What does the extraction pipeline do?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Retry OCR with different settings
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Show an <span class="term" data-definition="Error handling is the practice of anticipating, detecting, and resolving errors in a program so it can recover gracefully instead of crashing.">error</span> message
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Continue with just the caption text — the pipeline keeps going
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Ask the user to take a better photo
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question-block"
+             data-correct="b"
+             data-explanation-right="parseShareIntent is the entry point for all shared data. If it does not correctly extract the text and image, nothing downstream will have the right input to work with."
+             data-explanation-wrong="The issue is upstream — start by checking whether the shared data was correctly received and parsed before looking at later stages.">
+          <p class="quiz-question">You are debugging PostCal and the form shows empty fields even though the Instagram post had event details. What would you check first?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The success screen animation
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Whether parseShareIntent correctly extracted the shared text
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The calendar permission
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app icon
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question-block"
+             data-correct="c"
+             data-explanation-right="A state machine makes impossible states unrepresentable. You cannot accidentally save while extraction is still running, or extract while already saving."
+             data-explanation-wrong="State machines are not about speed or appearance. They prevent bugs by making illegal state combinations structurally impossible.">
+          <p class="quiz-question">Why does PostCal use a <span class="term" data-definition="A state machine is a model where a system can be in exactly one of a finite number of states at any time, with defined rules for transitioning between them.">state machine</span> (idle, extracting, ready, saving, saved) instead of just true/false flags?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It looks more professional
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> State machines are faster
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It prevents impossible states — like saving when extraction has not finished
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> TypeScript requires it
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz controls -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+  </main>
+
+</body>
+</html>

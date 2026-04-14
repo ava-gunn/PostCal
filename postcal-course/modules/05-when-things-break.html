@@ -1,0 +1,288 @@
+<section class="module" id="module-5" style="background: var(--color-bg)">
+  <div class="module-content">
+
+    <!-- ── MODULE HEADER ──────────────────────────────────────── -->
+    <header class="module-header animate-in">
+      <span class="module-number">05</span>
+      <h1 class="module-title">When Things Break</h1>
+      <p class="module-subtitle">Error handling, graceful degradation, and debugging patterns.</p>
+    </header>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 1 — The Safety Net Philosophy
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-1">
+      <h2 class="screen-heading animate-in">The Safety Net Philosophy</h2>
+
+      <p class="animate-in">
+        PostCal is built like a car with <span class="term" data-definition="A crumple zone is a structural feature designed to absorb impact energy during a collision. In software, it means isolating failures so one broken part does not take down the whole system.">crumple zones</span> — when something goes wrong, the damage is contained to one area. The <span class="term" data-definition="OCR (Optical Character Recognition) is a technology that reads text from images — converting pixels of letters into actual text characters a computer can understand.">OCR</span> can fail without taking down the parser. The parser can fail without crashing the form.
+      </p>
+      <p class="animate-in">
+        The form always works, even if every extraction returned nothing. This philosophy of <span class="term" data-definition="Graceful degradation means a system continues to function when parts of it fail, offering reduced but still usable functionality rather than crashing entirely.">graceful degradation</span> is baked into every layer.
+      </p>
+
+      <div class="pattern-cards stagger-children animate-in">
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-success-light); color: var(--color-success);">🛡️</div>
+          <div class="pattern-title"><span class="term" data-definition="Null is a special value that represents the intentional absence of any object or data. Returning null instead of throwing an error lets calling code handle missing data gracefully.">Null</span>, Not Crash</div>
+          <p class="pattern-desc">Every parser returns <span class="term" data-definition="Null is a special value that represents nothing — no data, no result. It signals that a function could not produce a value, without causing an error.">null</span> on failure, never throws. The caller simply moves on when a field is missing.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-info-light); color: var(--color-info);">🔒</div>
+          <div class="pattern-title"><span class="term" data-definition="Try/catch is a programming construct that lets you attempt risky code (try) and gracefully handle any errors that occur (catch) instead of crashing.">Try-Catch</span> Everything</div>
+          <p class="pattern-desc">Native modules like OCR and calendar are wrapped in <span class="term" data-definition="Try/catch is a control structure that attempts a block of code and, if it throws an error, runs a recovery block instead of crashing the program.">try/catch</span> blocks so platform-level failures never propagate.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #F3E8FF; color: #7B6DAA;">🔄</div>
+          <div class="pattern-title"><span class="term" data-definition="A state machine is a model where a system can be in exactly one of a finite number of states at any time, with defined rules for transitioning between them.">Status Machine</span></div>
+          <p class="pattern-desc">Clear states prevent impossible transitions. You cannot save while extracting or extract while saving.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: #FFF3E0; color: #D4A843;">🚦</div>
+          <div class="pattern-title"><span class="term" data-definition="A navigation guard is a check that prevents duplicate or invalid screen transitions, typically using a ref flag that blocks the action if it is already in progress.">Navigation Guards</span></div>
+          <p class="pattern-desc"><span class="term" data-definition="A ref (short for reference) is a mutable value in React that persists across renders without causing re-renders when changed — useful for tracking flags like isNavigating.">Refs</span> prevent duplicate saves and <span class="term" data-definition="A race condition occurs when two or more operations try to run at the same time and the outcome depends on which one finishes first, often causing bugs.">race conditions</span> during screen transitions.</p>
+        </div>
+        <div class="pattern-card animate-in">
+          <div class="pattern-icon" style="background: var(--color-accent-light); color: var(--color-accent);">🪢</div>
+          <div class="pattern-title">Graceful <span class="term" data-definition="A fallback is an alternative plan or value used when the primary approach fails — like showing an empty form when extraction returns no data.">Fallbacks</span></div>
+          <p class="pattern-desc">The empty form is always available as a last resort. Even if every extraction returned nothing, the user can type manually.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">💡</span>
+        <div class="callout-content">
+          <span class="callout-title">Think of it this way</span>
+          <p>PostCal has 94 tests across 13 <span class="term" data-definition="A test suite is a collection of related tests grouped together, typically covering one module or feature of the application.">test suites</span>. But tests only catch known problems. The safety net patterns above catch the unknown ones — the blurry images, the weird date formats, the phones with broken calendar APIs.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 2 — The Status Machine
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-2">
+      <h2 class="screen-heading animate-in">The Status Machine</h2>
+
+      <p class="animate-in">
+        PostCal tracks exactly where it is in the extraction-to-save pipeline using a <span class="term" data-definition="A state machine is a model where a system can be in exactly one of a finite number of states at any time, with defined rules for transitioning between them.">state machine</span>. Step through the animation below to see each transition.
+      </p>
+
+      <div class="flow-animation animate-in"
+           id="flow-module5"
+           data-steps='[
+             {"label":"Start at Idle -- the app is waiting for a share intent from Instagram.","highlight":"flow-m5-idle"},
+             {"label":"Share received! Transition to Extracting -- the OCR and parser pipeline is running.","highlight":"flow-m5-extracting","packet":true,"from":"m5-idle","to":"m5-extracting"},
+             {"label":"Pipeline succeeds -- transition to Ready. The form shows pre-filled fields.","highlight":"flow-m5-ready","packet":true,"from":"m5-extracting","to":"m5-ready"},
+             {"label":"Pipeline fails -- transition to Error. The user sees Retry and Manual Entry buttons.","highlight":"flow-m5-error","packet":true,"from":"m5-extracting","to":"m5-error"},
+             {"label":"User taps Save -- transition to Saving. The event is being written to the calendar.","highlight":"flow-m5-saving","packet":true,"from":"m5-ready","to":"m5-saving"},
+             {"label":"Calendar write succeeds -- transition to Saved. Navigate to the success screen.","highlight":"flow-m5-saved","packet":true,"from":"m5-saving","to":"m5-saved"},
+             {"label":"Reset -- back to Idle. The share intent is cleared on background/foreground to prevent stale state.","highlight":"flow-m5-idle","packet":true,"from":"m5-saved","to":"m5-idle"}
+           ]'>
+
+        <!-- Actors row -->
+        <div class="flow-actors">
+          <div class="flow-actor" id="flow-m5-idle">
+            <div class="flow-actor-icon">💤</div>
+            <span>Idle</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-extracting">
+            <div class="flow-actor-icon">⚙️</div>
+            <span>Extracting</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-ready">
+            <div class="flow-actor-icon">✅</div>
+            <span>Ready</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-error">
+            <div class="flow-actor-icon">❌</div>
+            <span>Error</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-saving">
+            <div class="flow-actor-icon">💾</div>
+            <span>Saving</span>
+          </div>
+          <div class="flow-actor" id="flow-m5-saved">
+            <div class="flow-actor-icon">🎉</div>
+            <span>Saved</span>
+          </div>
+        </div>
+
+        <!-- Animated packet -->
+        <div class="flow-packet"></div>
+
+        <!-- Step label -->
+        <div class="flow-step-label">Click "Next Step" to begin</div>
+
+        <!-- Controls -->
+        <div class="flow-controls">
+          <button class="btn btn-primary flow-next-btn">Next Step</button>
+          <button class="btn flow-reset-btn">Reset</button>
+          <span class="flow-progress">Step 0 / 7</span>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🔑</span>
+        <div class="callout-content">
+          <span class="callout-title">Why a state machine?</span>
+          <p>By defining exactly which states are possible and which transitions are allowed, you prevent impossible situations — like trying to save when there is nothing to save. Error recovery is built in: "Try Again" reruns the pipeline from Extracting, while "Enter Manually" jumps straight to Ready with empty fields.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">♿</span>
+        <div class="callout-content">
+          <span class="callout-title"><span class="term" data-definition="Accessibility is the practice of designing software so it can be used by people with disabilities, including those who use screen readers, have limited vision, or are sensitive to motion.">Accessibility</span> detail</span>
+          <p>The success screen checks the device <span class="term" data-definition="Reduced motion is an accessibility setting that tells apps the user prefers less animation, often because motion causes discomfort or nausea.">reduced motion</span> preference. If the user has it enabled, the celebration animation is replaced with a simple static checkmark.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 3 — Spot the Bug
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-3">
+      <h2 class="screen-heading animate-in">Spot the Bug</h2>
+
+      <p class="animate-in">
+        This save handler has a subtle bug that could cause problems in production. Click the line you think contains the issue.
+      </p>
+
+      <div class="bug-challenge animate-in">
+        <h3>Find the bug in handleSave</h3>
+        <div class="bug-code">
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="This line just defines the function -- nothing wrong here.">
+            <span class="line-num">1</span>
+            <code>const handleSave = <span class="term" data-definition="Async marks a function as asynchronous, meaning it can use await to pause execution while waiting for operations like network requests or file writes to complete.">async</span> () =&gt; {</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Setting status to saving is correct -- it disables the button to prevent double taps.">
+            <span class="line-num">2</span>
+            <code>  setStatus('saving');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Requesting permission is necessary -- good practice before writing to the calendar.">
+            <span class="line-num">3</span>
+            <code>  await requestCalendarPermission();</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Building the event object is fine -- it just combines extraction data with user edits.">
+            <span class="line-num">4</span>
+            <code>  const event = buildCalendarEvent(extraction, userEdits);</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Writing the event is the core action -- this is what saves to the calendar.">
+            <span class="line-num">5</span>
+            <code>  await writeEvent(event);</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="Setting saved status is correct -- it updates the UI to reflect completion.">
+            <span class="line-num">6</span>
+            <code>  setStatus('saved');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, true)" data-explanation="Without a navigation guard, tapping Save twice quickly could trigger two navigations. PostCal prevents this with an isNavigating ref that blocks the second call. The duplicate router.replace on lines 7-8 makes this bug visible — but even a single call needs the guard.">
+            <span class="line-num">7</span>
+            <code>  router.replace('/success');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, true)" data-explanation="This is the duplicate navigation call. Without a navigation guard, tapping Save twice quickly fires two navigations. PostCal uses an isNavigating ref to block the second call and prevent this race condition.">
+            <span class="line-num">8</span>
+            <code>  router.replace('/success');</code>
+          </div>
+          <div class="bug-line" onclick="checkBugLine(this, false)" data-hint="This just closes the function -- nothing wrong here.">
+            <span class="line-num">9</span>
+            <code>};</code>
+          </div>
+        </div>
+        <div class="bug-feedback"></div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">🔑</span>
+        <div class="callout-content">
+          <span class="callout-title">The fix in PostCal</span>
+          <p>PostCal wraps navigation in a <span class="term" data-definition="A navigation guard is a check that prevents duplicate or invalid screen transitions, typically using a ref flag that blocks the action if it is already in progress.">navigation guard</span> using a <span class="term" data-definition="A ref (short for reference) is a mutable value in React that persists across renders without causing re-renders when changed — useful for tracking flags like isNavigating.">ref</span>: <code>if (isNavigating.current) return;</code> followed by <code>isNavigating.current = true;</code>. This pattern ensures exactly one navigation happens, no matter how fast the user taps.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCREEN 4 — Quiz
+         ════════════════════════════════════════════════════════════ -->
+    <div class="screen" id="screen-5-4">
+      <h2 class="screen-heading animate-in">Check Your Understanding</h2>
+
+      <div class="quiz-container animate-in" id="quiz-module5">
+
+        <!-- Q1 -->
+        <div class="quiz-question-block"
+             data-correct="c"
+             data-explanation-right="The pipeline keeps going with whatever text it has. If OCR returns null, the parser still processes the caption text. PostCal never crashes on a single failure."
+             data-explanation-wrong="PostCal does not retry or ask the user to intervene at the OCR stage. It continues with the caption text and shows whatever it could extract.">
+          <p class="quiz-question">The OCR engine returns <span class="term" data-definition="Null is a special value that represents the intentional absence of any object or data. Returning null instead of throwing an error lets calling code handle missing data gracefully.">null</span> because the image was too blurry. What does the extraction pipeline do?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Retry OCR with different settings
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Show an <span class="term" data-definition="Error handling is the practice of anticipating, detecting, and resolving errors in a program so it can recover gracefully instead of crashing.">error</span> message
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Continue with just the caption text — the pipeline keeps going
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Ask the user to take a better photo
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-question-block"
+             data-correct="b"
+             data-explanation-right="parseShareIntent is the entry point for all shared data. If it does not correctly extract the text and image, nothing downstream will have the right input to work with."
+             data-explanation-wrong="The issue is upstream — start by checking whether the shared data was correctly received and parsed before looking at later stages.">
+          <p class="quiz-question">You are debugging PostCal and the form shows empty fields even though the Instagram post had event details. What would you check first?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The success screen animation
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Whether parseShareIntent correctly extracted the shared text
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The calendar permission
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app icon
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-question-block"
+             data-correct="c"
+             data-explanation-right="A state machine makes impossible states unrepresentable. You cannot accidentally save while extraction is still running, or extract while already saving."
+             data-explanation-wrong="State machines are not about speed or appearance. They prevent bugs by making illegal state combinations structurally impossible.">
+          <p class="quiz-question">Why does PostCal use a <span class="term" data-definition="A state machine is a model where a system can be in exactly one of a finite number of states at any time, with defined rules for transitioning between them.">state machine</span> (idle, extracting, ready, saving, saved) instead of just true/false flags?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It looks more professional
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> State machines are faster
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> It prevents impossible states — like saving when extraction has not finished
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> TypeScript requires it
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Quiz controls -->
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module5')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module5')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>

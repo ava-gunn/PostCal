@@ -1,0 +1,266 @@
+<section class="module" id="module-4" style="background: var(--color-bg-warm)">
+  <div class="module-content">
+
+    <!-- ═══════════════════ MODULE HEADER ═══════════════════ -->
+    <header class="module-header animate-in">
+      <span class="module-number">04</span>
+      <h2 class="module-title">Saving to Calendar</h2>
+      <p class="module-subtitle">How PostCal goes from extracted data to a real calendar event on your phone.</p>
+    </header>
+
+    <!-- ═══════════════════ SCREEN 1 ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">User Edits Trump Everything</h3>
+
+      <p class="animate-in">The extraction pipeline is like a secretary who fills out a draft — but the boss (the user) has final say. Any edit the user makes on the review screen <strong>overrides</strong> what the AI extracted.</p>
+
+      <p class="animate-in">PostCal resolves every field through a three-tier <span class="term" data-definition="A chain where each level is only consulted if the previous one has no value. The first non-empty value wins.">precedence chain</span>. The first non-empty value wins.</p>
+
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>User Edit (highest priority)</strong>
+            <p>Whatever the user typed on the review screen. If they changed it, that value is final.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>Extraction Result (fallback)</strong>
+            <p>What the AI pipeline pulled from the Instagram post. Used only if the user did not edit the field.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <strong>Default Value (last resort)</strong>
+            <p>"Untitled Event" for the name, today at 7:00 PM for the time, and empty string for the location.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">Code</span>
+<code><span class="code-keyword">const</span> title = userEdits.<span class="code-property">eventName</span>
+  <span class="code-operator">??</span> extraction<span class="code-operator">?.</span><span class="code-property">eventName</span>
+  <span class="code-operator">??</span> <span class="code-string">'Untitled Event'</span>;
+
+<span class="code-keyword">const</span> location = userEdits.<span class="code-property">venue</span>
+  <span class="code-operator">??</span> extraction<span class="code-operator">?.</span><span class="code-property">venue</span>
+  <span class="code-operator">??</span> <span class="code-string">''</span>;</code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <p class="tl">Use whatever the user typed for the event name.</p>
+            <p class="tl">If they did not edit it, use what the extraction pipeline found.</p>
+            <p class="tl">If extraction also found nothing, call it "Untitled Event".</p>
+            <p class="tl">Same logic for location — user edit, then extraction, then empty string.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">??</span>
+        <div class="callout-content">
+          <span class="callout-title">What is <span class="term" data-definition="The ?? operator in JavaScript. It returns the right-hand side only when the left-hand side is null or undefined — not for other falsy values like 0 or empty string.">??</span> (nullish coalescing)?</span>
+          <p>The <span class="term" data-definition="An operator that returns the right-hand operand when the left is null or undefined. Unlike ||, it does not treat 0 or empty string as missing."><code>??</code> operator</span> means "if the left side is <span class="term" data-definition="A value that can be null or undefined. In PostCal, user edits are nullable — they only have a value if the user actually typed something.">null or undefined</span>, use the right side instead." It lets PostCal chain fallbacks cleanly in a single expression.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SCREEN 2 ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Asking Permission</h3>
+
+      <p class="animate-in">Mobile apps cannot just write to your calendar. The <span class="term" data-definition="The underlying software (iOS or Android) that controls hardware, manages apps, and enforces security rules like permissions.">operating system</span> requires every app to request <span class="term" data-definition="An explicit grant from the user allowing an app to access a protected resource like the calendar, camera, or location. Managed and enforced by the operating system.">permission</span> first — and the user can say no.</p>
+
+      <p class="animate-in">Here is exactly what happens when the user taps "Save to Calendar."</p>
+
+      <div class="step-cards stagger-children animate-in">
+        <div class="step-card animate-in">
+          <span class="step-num">1</span>
+          <div class="step-body">
+            <strong>User taps "Save to Calendar"</strong>
+            <p>The button press triggers the save flow inside PostCal.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">2</span>
+          <div class="step-body">
+            <strong>App calls <code>requestCalendarPermission()</code></strong>
+            <p>PostCal asks the OS whether it already has calendar access, or needs to prompt the user.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">3</span>
+          <div class="step-body">
+            <strong>First time: native dialog appears</strong>
+            <p>The OS shows its own popup: "Allow PostCal to access your calendar?" This dialog is not drawn by PostCal — it comes from iOS or Android itself.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">4</span>
+          <div class="step-body">
+            <strong>User grants permission</strong>
+            <p>The OS remembers the choice and PostCal proceeds to write the event.</p>
+          </div>
+        </div>
+        <div class="step-card animate-in">
+          <span class="step-num">5</span>
+          <div class="step-body">
+            <strong>User denies permission</strong>
+            <p>PostCal exits the save flow silently. No crash, no retry loop — the user simply stays on the review screen.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">&#x1F512;</span>
+        <div class="callout-content">
+          <span class="callout-title">Why permissions exist</span>
+          <p>Your calendar contains private data — meetings, medical appointments, personal plans. The <span class="term" data-definition="The underlying software (iOS or Android) that controls hardware, manages apps, and enforces security rules like permissions.">operating system</span> enforces that apps must always ask before reading or writing to it. This is an OS-level rule, not something the app can skip.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SCREEN 3 ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Writing the Event</h3>
+
+      <p class="animate-in">Once permission is granted, PostCal calls <code>writeEvent</code> to create the actual calendar entry. This function talks to the <span class="term" data-definition="A set of functions provided by the operating system or a library that lets your app interact with a service — here, the device's calendar.">calendar API</span> through Expo's Calendar module.</p>
+
+      <div class="translation-block animate-in">
+        <div class="translation-code">
+          <span class="translation-label">Code</span>
+<code><span class="code-keyword">const</span> defaultCalendar <span class="code-operator">=</span>
+  <span class="code-keyword">await</span> Calendar.<span class="code-function">getDefaultCalendarAsync</span>();
+<span class="code-keyword">let</span> calendarId <span class="code-operator">=</span> defaultCalendar.<span class="code-property">id</span>;
+
+<span class="code-keyword">const</span> eventId <span class="code-operator">=</span>
+  <span class="code-keyword">await</span> Calendar.<span class="code-function">createEventAsync</span>(calendarId, {
+    <span class="code-property">title</span>:     event.<span class="code-property">title</span>,
+    <span class="code-property">startDate</span>: event.<span class="code-property">startDate</span>,
+    <span class="code-property">endDate</span>:   event.<span class="code-property">endDate</span>,
+    <span class="code-property">location</span>:  event.<span class="code-property">location</span>,
+    <span class="code-property">timeZone</span>:  Intl.<span class="code-function">DateTimeFormat</span>()
+      .<span class="code-function">resolvedOptions</span>().<span class="code-property">timeZone</span>,
+  });
+
+<span class="code-keyword">return</span> eventId;</code>
+        </div>
+        <div class="translation-english">
+          <span class="translation-label">Plain English</span>
+          <div class="translation-lines">
+            <p class="tl">Ask the system for the default calendar (the one you probably use most).</p>
+            <p class="tl">Grab its ID so we know <em>where</em> to save the event.</p>
+            <p class="tl">Create a new event in that calendar with all the details.</p>
+            <p class="tl">Set the title — what the user approved on the review screen.</p>
+            <p class="tl">Set when it starts and ends (default duration: 2 hours).</p>
+            <p class="tl">Set the location if we have one.</p>
+            <p class="tl">Use the <span class="term" data-definition="A named region (like 'America/New_York') that determines how UTC times are displayed locally. PostCal reads the device's timezone so calendar events show the correct local time.">timezone</span> from the device so times display correctly.</p>
+            <p class="tl">Return the new <span class="term" data-definition="A unique string the calendar system assigns to a newly created event. It serves as proof the event was saved and can be used to update or delete it later.">event ID</span> — proof it was saved successfully.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info animate-in">
+        <span class="callout-icon">&#x1F4F1;</span>
+        <div class="callout-content">
+          <span class="callout-title">Android vs iOS</span>
+          <p>On Android, <code>getDefaultCalendarAsync</code> might not exist. PostCal uses a <span class="term" data-definition="A backup strategy used when the primary approach fails or is unavailable. Here, if no default calendar exists, PostCal scans all calendars and picks the first writable one.">fallback</span>: it scans all calendars and picks the first writable one. On iOS, the default calendar is always available.</p>
+        </div>
+      </div>
+
+      <div class="callout callout-accent animate-in">
+        <span class="callout-icon">&#x23F1;</span>
+        <div class="callout-content">
+          <span class="callout-title"><span class="term" data-definition="A programming pattern where the code pauses at an 'await' keyword until an asynchronous operation (a Promise) finishes, then continues with the result. It makes async code read like synchronous code.">Async/await</span> in action</span>
+          <p>Every line with <code>await</code> pauses until the <span class="term" data-definition="An object representing a value that will be available in the future. Calendar.createEventAsync returns a Promise that resolves to the new event's ID once the OS finishes writing it.">promise</span> resolves. <code>getDefaultCalendarAsync</code> waits for the OS to respond; <code>createEventAsync</code> waits for the event to be written. If either fails, the error propagates up to PostCal's error handler.</p>
+        </div>
+      </div>
+
+      <p class="animate-in">After the event is saved, PostCal shows a success screen that <strong>auto-dismisses after 2 seconds</strong>. On devices with reduced-motion preferences enabled, the dismiss animation is replaced with a simple fade to respect accessibility settings.</p>
+    </div>
+
+    <!-- ═══════════════════ SCREEN 4: QUIZ ═══════════════════ -->
+    <div class="screen">
+      <h3 class="screen-heading animate-in">Check Your Understanding</h3>
+
+      <div class="quiz-container animate-in" id="quiz-module4">
+
+        <!-- Question 1 -->
+        <div class="quiz-question-block" data-correct="b"
+             data-explanation-right="User edits always take highest priority in the precedence chain. The user changed the venue, so their value wins."
+             data-explanation-wrong="User edits override extraction results. Since the user changed the venue to '450 Main St, Brooklyn', that value is what gets saved.">
+          <p class="quiz-question">A user shares an event post, then edits the venue from "Warehouse" to "450 Main St, Brooklyn". Which value gets saved to the calendar?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Warehouse
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> 450 Main St, Brooklyn
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Both, separated by a comma
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Neither — the app uses the OCR text
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="When no time is found in the shared content, PostCal defaults to 7:00 PM (19:00) — a reasonable evening time for most events."
+             data-explanation-wrong="PostCal defaults to 7:00 PM (19:00) when no time can be extracted. This was chosen as a sensible default since most shared events are evening events.">
+          <p class="quiz-question">PostCal could not find any time in the shared content. What time does the calendar event default to?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> Midnight
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> 12:00 PM noon
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> 7:00 PM (19:00)
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The current time
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="quiz-question-block" data-correct="c"
+             data-explanation-right="PostCal handles denial gracefully. The save simply does not happen, and the user remains on the review screen with no crash or retry loop."
+             data-explanation-wrong="PostCal exits the save flow silently when permission is denied. No crash, no repeated prompts — the user stays on the review screen.">
+          <p class="quiz-question">The user denies calendar permission. What happens?</p>
+          <div class="quiz-options">
+            <button class="quiz-option" data-value="a" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app crashes
+            </button>
+            <button class="quiz-option" data-value="b" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The app keeps asking until they allow it
+            </button>
+            <button class="quiz-option" data-value="c" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The save fails silently and the user stays on the review screen
+            </button>
+            <button class="quiz-option" data-value="d" onclick="selectOption(this)">
+              <span class="quiz-option-radio"></span> The event is saved anyway
+            </button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <button class="quiz-check-btn" onclick="checkQuiz('quiz-module4')">Check Answers</button>
+        <button class="quiz-reset-btn" onclick="resetQuiz('quiz-module4')">Reset</button>
+      </div>
+    </div>
+
+  </div>
+</section>
