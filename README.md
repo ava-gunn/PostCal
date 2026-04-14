@@ -1,50 +1,56 @@
-# Welcome to your Expo app 👋
+# PostCal
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Share an event from Instagram, get it on your calendar in one tap.
 
-## Get started
+PostCal extracts event details (name, date, time, venue) from shared social media posts using OCR and text parsing, lets you review and edit the details, then saves directly to your device calendar.
 
-1. Install dependencies
+## How it works
 
-   ```bash
-   npm install
-   ```
+1. **Share** — Tap "Share" on an Instagram event post and select PostCal
+2. **Review** — The app extracts event details automatically; edit anything it got wrong
+3. **Save** — One tap to add the event to your calendar
 
-2. Start the app
+## Tech stack
 
-   ```bash
-   npx expo start
-   ```
+- **Expo 54** with Expo Router (file-based routing)
+- **React Native 0.81** / React 19
+- **expo-share-intent** — captures shared content from other apps
+- **expo-text-extractor** — OCR for extracting text from images
+- **chrono-node** — natural language date/time parsing
+- **expo-calendar** — writes events to the device calendar
+- **React Native UI Lib** — UI components
+- **TypeScript**
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Getting started
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+For device builds:
 
-## Learn more
+```bash
+npx eas build --profile development
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+app/
+  index.tsx        — Home/onboarding screen
+  review.tsx       — Event review & editing
+  success.tsx      — Save confirmation
+  +native-intent   — Share intent handler
+contexts/
+  ExtractionContext — Shared state (content, extraction, edits, status)
+lib/
+  pipeline.ts      — Extraction orchestration (OCR → parse → build fields)
+  parse-*.ts       — Event name, date/time, venue parsers
+  calendar.ts      — Calendar permission & write helpers
+```
 
-## Join the community
+## Platform support
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **iOS** 16.0+
+- **Android** SDK 24+
