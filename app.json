@@ -10,6 +10,9 @@
     "newArchEnabled": true,
     "ios": {
       "bundleIdentifier": "com.postcal.app",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.postcal.app"]
+      },
       "infoPlist": {
         "MinimumOSVersion": "16.0",
         "ITSAppUsesNonExemptEncryption": false
