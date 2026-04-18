@@ -80,6 +80,10 @@ export default function ReviewScreen() {
   useEffect(() => {
     if (!hasShareIntent || !shareIntent) return;
 
+    if (__DEV__) {
+      console.debug('[review] raw shareIntent:', JSON.stringify(shareIntent, null, 2));
+    }
+
     const content = parseShareIntent(shareIntent);
     if (!content) return;
 

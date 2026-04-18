@@ -53,7 +53,7 @@ export default function RootLayout() {
   }
 
   return (
-    <ShareIntentProvider options={{ resetOnBackground: true }}>
+    <ShareIntentProvider options={{ resetOnBackground: true, debug: __DEV__ }}>
       <ExtractionProvider>
         <ShareIntentBridge />
         <Stack screenOptions={{ headerShown: false }}>

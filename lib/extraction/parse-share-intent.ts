@@ -23,9 +23,9 @@ export function parseShareIntent(input: ShareIntentInput): SharedContent | null 
     text = trimmedText;
   }
 
-  // Append webUrl to text if present
+  // Append webUrl to text if present (skip if identical — Instagram duplicates URL across text and webUrl)
   const trimmedUrl = input.webUrl?.trim();
-  if (trimmedUrl) {
+  if (trimmedUrl && trimmedUrl !== text) {
     text = text ? `${text}\n${trimmedUrl}` : trimmedUrl;
   }
 
