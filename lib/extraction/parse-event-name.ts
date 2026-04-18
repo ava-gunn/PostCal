@@ -14,7 +14,9 @@ export function parseEventName(rawText: string): string | null {
       ocrLines = [];
     }
 
-    const candidate = findCandidate(metadataLines) ?? findCandidate(ocrLines);
+    // Prefer OCR (flyer text) — the actual event name is usually printed on the image.
+    // Fall back to metadata (caption), which is noisier.
+    const candidate = findCandidate(ocrLines) ?? findCandidate(metadataLines);
 
     if (!candidate) {
       return null;

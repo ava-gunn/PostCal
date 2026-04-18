@@ -1,62 +1,47 @@
 import * as Calendar from 'expo-calendar';
 import type { ExtractionResult, CalendarEvent } from '@/lib/extraction/types';
 
-/**
- * Parse ISO date string (YYYY-MM-DD) and time string (HH:MM) into a Date object.
- * Falls back to today at 19:00 for missing or unparseable values.
- */
-function parseToDate(dateStr: string | null, timeStr: string | null): Date {
+function parseDateOnly(dateStr: string | null): { year: number; month: number; day: number } {
   const now = new Date();
+  const fallback = { year: now.getFullYear(), month: now.getMonth(), day: now.getDate() };
 
-  let year = now.getFullYear();
-  let month = now.getMonth();
-  let day = now.getDate();
+  if (!dateStr) return fallback;
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return fallback;
 
-  if (dateStr) {
-    const parts = dateStr.split('-');
-    if (parts.length === 3) {
-      const parsedYear = parseInt(parts[0], 10);
-      const parsedMonth = parseInt(parts[1], 10) - 1;
-      const parsedDay = parseInt(parts[2], 10);
-      if (
-        !isNaN(parsedYear) && !isNaN(parsedMonth) && !isNaN(parsedDay) &&
-        parsedMonth >= 0 && parsedMonth <= 11 &&
-        parsedDay >= 1 && parsedDay <= 31
-      ) {
-        year = parsedYear;
-        month = parsedMonth;
-        day = parsedDay;
-      }
-    }
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10) - 1;
+  const day = parseInt(parts[2], 10);
+  if (
+    isNaN(year) || isNaN(month) || isNaN(day) ||
+    month < 0 || month > 11 || day < 1 || day > 31
+  ) {
+    return fallback;
   }
+  return { year, month, day };
+}
 
-  let hours = 19;
-  let minutes = 0;
-
-  if (timeStr) {
-    const timeParts = timeStr.split(':');
-    if (timeParts.length >= 2) {
-      const parsedHours = parseInt(timeParts[0], 10);
-      const parsedMinutes = parseInt(timeParts[1], 10);
-      if (
-        !isNaN(parsedHours) && !isNaN(parsedMinutes) &&
-        parsedHours >= 0 && parsedHours <= 23 &&
-        parsedMinutes >= 0 && parsedMinutes <= 59
-      ) {
-        hours = parsedHours;
-        minutes = parsedMinutes;
-      }
-    }
+function parseTimeOnly(timeStr: string | null): { hours: number; minutes: number } | null {
+  if (!timeStr) return null;
+  const parts = timeStr.split(':');
+  if (parts.length < 2) return null;
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  if (
+    isNaN(hours) || isNaN(minutes) ||
+    hours < 0 || hours > 23 || minutes < 0 || minutes > 59
+  ) {
+    return null;
   }
-
-  return new Date(year, month, day, hours, minutes);
+  return { hours, minutes };
 }
 
 const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Build a CalendarEvent from extraction results merged with user edits.
- * User edits take precedence over extraction values.
+ * When no time is known, creates an all-day event instead of defaulting to 7–9 PM.
  */
 export function buildCalendarEvent(
   extraction: ExtractionResult | null,
@@ -67,10 +52,18 @@ export function buildCalendarEvent(
   const timeStr = userEdits.time ?? extraction?.time ?? null;
   const location = userEdits.venue ?? extraction?.venue ?? '';
 
-  const startDate = parseToDate(dateStr, timeStr);
-  const endDate = new Date(startDate.getTime() + TWO_HOURS_MS);
+  const { year, month, day } = parseDateOnly(dateStr);
+  const time = parseTimeOnly(timeStr);
 
-  return { title, startDate, endDate, location };
+  if (time) {
+    const startDate = new Date(year, month, day, time.hours, time.minutes);
+    const endDate = new Date(startDate.getTime() + TWO_HOURS_MS);
+    return { title, startDate, endDate, location };
+  }
+
+  const startDate = new Date(year, month, day, 0, 0);
+  const endDate = new Date(startDate.getTime() + ONE_DAY_MS);
+  return { title, startDate, endDate, location, allDay: true };
 }
 
 /**
@@ -98,6 +91,7 @@ export async function writeEvent(event: CalendarEvent): Promise<string> {
     startDate: event.startDate,
     endDate: event.endDate,
     location: event.location,
+    allDay: event.allDay ?? false,
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 

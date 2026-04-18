@@ -14,6 +14,9 @@ const config: Config = {
       },
     }],
   },
+  globals: {
+    __DEV__: false,
+  },
 };
 
 export default config;

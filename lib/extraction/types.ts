@@ -2,6 +2,7 @@ export interface SharedContent {
   text: string | null;
   imageUri: string | null;
   mimeType: string | null;
+  venueHint?: string | null;
 }
 
 export interface ExtractionConfidence {
@@ -23,6 +24,7 @@ export interface ExtractionResult {
 export interface CalendarEvent {
   title: string;
   startDate: Date;
-  endDate: Date;              // Default: startDate + 2 hours
+  endDate: Date;              // Default: startDate + 2 hours, or +24h when allDay
   location: string;
+  allDay?: boolean;
 }

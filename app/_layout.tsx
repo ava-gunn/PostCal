@@ -26,9 +26,11 @@ function ShareIntentBridge() {
 
   useEffect(() => {
     if (hasShareIntent) {
-      hadShareIntent.current = true;
+      if (!hadShareIntent.current) {
+        hadShareIntent.current = true;
+        routerRef.current.push('/review');
+      }
     } else if (hadShareIntent.current) {
-      // Share intent was reset (e.g., background → foreground transition)
       hadShareIntent.current = false;
       reset();
       routerRef.current.replace('/');

@@ -11,8 +11,13 @@ describe('parseEventName', () => {
     expect(parseEventName(text)).toBe('DJ Night at Warehouse');
   });
 
-  it('extracts from metadata section first when separator present', () => {
-    const text = 'Summer Festival\n---\nWAREHOUSE PARTY';
+  it('extracts from OCR section first when separator present', () => {
+    const text = 'Summer Festival (caption)\n---\nWAREHOUSE PARTY';
+    expect(parseEventName(text)).toBe('WAREHOUSE PARTY');
+  });
+
+  it('falls back to metadata when OCR section is empty', () => {
+    const text = 'Summer Festival\n---\n';
     expect(parseEventName(text)).toBe('Summer Festival');
   });
 

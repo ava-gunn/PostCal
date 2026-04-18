@@ -33,7 +33,8 @@ describe('runPipeline', () => {
 
     const result = await runPipeline(sharedContent);
 
-    expect(result.eventName).toBe('Summer Music Festival');
+    // Event name comes from OCR (flyer) preferentially over caption
+    expect(result.eventName).toBe('DJ Night at Warehouse');
     expect(result.date).toMatch(/^\d{4}-03-28$/);
     expect(result.time).toBe('22:00');
     expect(result.rawText).toContain('Summer Music Festival');

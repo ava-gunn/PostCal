@@ -17,6 +17,7 @@ export async function runPipeline(sharedContent: SharedContent): Promise<Extract
         text: hydrated.text ?? content.text,
         imageUri: hydrated.imageUri ?? content.imageUri,
         mimeType: hydrated.mimeType ?? content.mimeType,
+        venueHint: hydrated.venueHint ?? content.venueHint,
       };
     }
   }
@@ -29,9 +30,14 @@ export async function runPipeline(sharedContent: SharedContent): Promise<Extract
 
   const rawText = mergeExtractionSources(metadataText, ocrText);
 
+  if (__DEV__) console.debug('[pipeline] rawText', rawText);
+
   const { date, time } = rawText ? parseDateTime(rawText) : { date: null, time: null };
   const eventName = rawText ? parseEventName(rawText) : null;
-  const venue = rawText ? parseVenue(rawText) : null;
+  const parsedVenue = rawText ? parseVenue(rawText) : null;
+  const venue = parsedVenue ?? content.venueHint ?? null;
+
+  if (__DEV__) console.debug('[pipeline] parsed', { eventName, date, time, venue, venueHint: content.venueHint });
 
   return buildEventFields({ eventName, date, time, venue, rawText });
 }

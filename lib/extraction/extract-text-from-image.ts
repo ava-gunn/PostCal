@@ -14,8 +14,11 @@ export async function extractTextFromImage(
     const blocks = await extractText(imageUri);
     const joined = blocks.join('\n').trim();
 
+    if (__DEV__) console.debug('[ocr] text', joined);
+
     return joined || null;
-  } catch {
+  } catch (e) {
+    if (__DEV__) console.debug('[ocr] error', e);
     return null;
   }
 }

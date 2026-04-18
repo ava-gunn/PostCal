@@ -48,24 +48,26 @@ describe('buildCalendarEvent', () => {
     expect(event.startDate.getHours()).toBe(22);
   });
 
-  it('defaults to today at 19:00 when date is null', () => {
+  it('creates an all-day event on today when date and time are both null', () => {
     const now = new Date();
     const event = buildCalendarEvent(null, {});
 
+    expect(event.allDay).toBe(true);
     expect(event.startDate.getFullYear()).toBe(now.getFullYear());
     expect(event.startDate.getMonth()).toBe(now.getMonth());
     expect(event.startDate.getDate()).toBe(now.getDate());
-    expect(event.startDate.getHours()).toBe(19);
+    expect(event.startDate.getHours()).toBe(0);
     expect(event.startDate.getMinutes()).toBe(0);
   });
 
-  it('defaults to 19:00 when time is null', () => {
+  it('creates an all-day event when time is null', () => {
     const event = buildCalendarEvent(
       { ...fullExtraction, time: null },
       {},
     );
 
-    expect(event.startDate.getHours()).toBe(19);
+    expect(event.allDay).toBe(true);
+    expect(event.startDate.getHours()).toBe(0);
     expect(event.startDate.getMinutes()).toBe(0);
   });
 
@@ -87,26 +89,35 @@ describe('buildCalendarEvent', () => {
     expect(event.location).toBe('');
   });
 
-  it('endDate is always startDate + 2 hours', () => {
+  it('endDate is startDate + 2 hours for timed events', () => {
     const event = buildCalendarEvent(fullExtraction, {});
     const diffMs = event.endDate.getTime() - event.startDate.getTime();
 
     expect(diffMs).toBe(2 * 60 * 60 * 1000);
+    expect(event.allDay).toBeFalsy();
   });
 
-  it('falls back to defaults for out-of-range date values', () => {
+  it('endDate is startDate + 24 hours for all-day events', () => {
+    const event = buildCalendarEvent({ ...fullExtraction, time: null }, {});
+    const diffMs = event.endDate.getTime() - event.startDate.getTime();
+
+    expect(diffMs).toBe(24 * 60 * 60 * 1000);
+    expect(event.allDay).toBe(true);
+  });
+
+  it('falls back to today for out-of-range date values and treats as all-day when time invalid', () => {
     const now = new Date();
     const event = buildCalendarEvent(
       { ...fullExtraction, date: '2026-13-45', time: '25:99' },
       {},
     );
 
-    // Out-of-range month/day should fall back to today
     expect(event.startDate.getFullYear()).toBe(now.getFullYear());
     expect(event.startDate.getMonth()).toBe(now.getMonth());
     expect(event.startDate.getDate()).toBe(now.getDate());
-    // Out-of-range hours/minutes should fall back to 19:00
-    expect(event.startDate.getHours()).toBe(19);
+    // Invalid time → all-day event starting at midnight
+    expect(event.allDay).toBe(true);
+    expect(event.startDate.getHours()).toBe(0);
     expect(event.startDate.getMinutes()).toBe(0);
   });
 
