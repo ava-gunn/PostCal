@@ -45,6 +45,7 @@ async function downloadImage(imageUrl: string): Promise<{ uri: string; mimeType:
 }
 
 export async function hydrateFromUrl(url: string): Promise<SharedContent | null> {
+  if (__DEV__) console.debug('[hydrate] fetching', url)
   try {
     const res = await fetch(url, {
       headers: {
@@ -53,19 +54,23 @@ export async function hydrateFromUrl(url: string): Promise<SharedContent | null>
         'Accept-Language': 'en-US,en;q=0.9',
       },
     })
+    if (__DEV__) console.debug('[hydrate] response', res.status, res.headers.get('content-type'))
     if (!res.ok) return null
     const html = await res.text()
+    if (__DEV__) console.debug('[hydrate] html bytes', html.length)
 
     const ogTitle = extractMeta(html, 'og:title')
     const ogDescription = extractMeta(html, 'og:description')
     const ogImage = extractMeta(html, 'og:image')
     const twitterImage = extractMeta(html, 'twitter:image')
+    if (__DEV__) console.debug('[hydrate] og', { ogTitle, ogDescription, ogImage, twitterImage })
 
     const textParts = [ogTitle, ogDescription].filter(Boolean) as string[]
     const text = textParts.length ? textParts.join('\n') : null
 
     const imageSource = ogImage || twitterImage
     const image = imageSource ? await downloadImage(imageSource) : null
+    if (__DEV__) console.debug('[hydrate] image', image)
 
     if (!text && !image) return null
 
@@ -74,7 +79,8 @@ export async function hydrateFromUrl(url: string): Promise<SharedContent | null>
       imageUri: image?.uri ?? null,
       mimeType: image?.mimeType ?? null,
     }
-  } catch {
+  } catch (e) {
+    if (__DEV__) console.debug('[hydrate] error', e)
     return null
   }
 }

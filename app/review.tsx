@@ -46,6 +46,10 @@ export default function ReviewScreen() {
   const router = useRouter();
   const responsive = useResponsiveSpacing();
 
+  if (__DEV__) {
+    console.debug('[review] render', { hasShareIntent, hasShareIntentObj: !!shareIntent, status });
+  }
+
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const isNavigating = useRef(false);
@@ -78,6 +82,9 @@ export default function ReviewScreen() {
   }, [setExtraction, setStatus]);
 
   useEffect(() => {
+    if (__DEV__) {
+      console.debug('[review] effect fired', { hasShareIntent, hasShareIntentObj: !!shareIntent });
+    }
     if (!hasShareIntent || !shareIntent) return;
 
     if (__DEV__) {
@@ -85,6 +92,9 @@ export default function ReviewScreen() {
     }
 
     const content = parseShareIntent(shareIntent);
+    if (__DEV__) {
+      console.debug('[review] parseShareIntent →', content);
+    }
     if (!content) return;
 
     setSharedContent(content);
