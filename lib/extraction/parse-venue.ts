@@ -1,3 +1,5 @@
+import { reportError } from '../report-error';
+
 export function parseVenue(rawText: string): string | null {
   try {
     // Priority 1: Street address pattern
@@ -28,7 +30,8 @@ export function parseVenue(rawText: string): string | null {
     }
 
     return null;
-  } catch {
+  } catch (e) {
+    reportError('extract.parse', e, { parser: 'venue' });
     return null;
   }
 }

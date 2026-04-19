@@ -1,4 +1,5 @@
 import * as chrono from 'chrono-node';
+import { reportError } from '../report-error';
 
 export function parseDateTime(rawText: string): { date: string | null; time: string | null } {
   try {
@@ -28,7 +29,8 @@ export function parseDateTime(rawText: string): { date: string | null; time: str
     }
 
     return { date, time };
-  } catch {
+  } catch (e) {
+    reportError('extract.parse', e, { parser: 'date-time' });
     return { date: null, time: null };
   }
 }

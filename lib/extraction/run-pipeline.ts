@@ -6,6 +6,7 @@ import { parseDateTime } from './parse-date-time';
 import { parseEventName } from './parse-event-name';
 import { parseVenue } from './parse-venue';
 import { buildEventFields } from './build-event-fields';
+import { reportError } from '../report-error';
 
 export async function runPipeline(sharedContent: SharedContent): Promise<ExtractionResult> {
   let content = sharedContent;
@@ -25,7 +26,10 @@ export async function runPipeline(sharedContent: SharedContent): Promise<Extract
   const metadataText = content.text;
 
   const ocrText = content.imageUri
-    ? await extractTextFromImage(content.imageUri).catch(() => null)
+    ? await extractTextFromImage(content.imageUri).catch((e) => {
+        reportError('extract.pipeline', e, { imageUri: content.imageUri, step: 'ocr' });
+        return null;
+      })
     : null;
 
   const rawText = mergeExtractionSources(metadataText, ocrText);

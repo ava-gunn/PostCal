@@ -1,3 +1,5 @@
+import { reportError } from '../report-error';
+
 export async function extractTextFromImage(
   imageUri: string
 ): Promise<string | null> {
@@ -19,6 +21,7 @@ export async function extractTextFromImage(
     return joined || null;
   } catch (e) {
     if (__DEV__) console.debug('[ocr] error', e);
+    reportError('extract.ocr', e, { imageUri });
     return null;
   }
 }
