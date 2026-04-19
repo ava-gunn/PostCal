@@ -12,7 +12,7 @@ export interface ExtractionState {
 
 interface ExtractionContextValue extends ExtractionState {
   setSharedContent: (content: SharedContent) => void;
-  setExtraction: (result: ExtractionResult) => void;
+  setExtraction: (result: ExtractionResult | null) => void;
   setUserEdit: (field: keyof Omit<ExtractionResult, 'confidence' | 'rawText'>, value: string | null) => void;
   setStatus: (status: ExtractionStatus) => void;
   reset: () => void;
@@ -34,7 +34,7 @@ export function ExtractionProvider({ children }: { children: ReactNode }) {
     setState(prev => ({ ...prev, sharedContent: content }));
   }, []);
 
-  const setExtraction = useCallback((result: ExtractionResult) => {
+  const setExtraction = useCallback((result: ExtractionResult | null) => {
     setState(prev => ({ ...prev, extraction: result }));
   }, []);
 
