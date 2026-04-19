@@ -75,7 +75,9 @@ function extractMeta(html: string, property: string): string | null {
   return null
 }
 
-async function downloadImage(imageUrl: string): Promise<{ uri: string; mimeType: string } | null> {
+export type DownloadImpl = (imageUrl: string) => Promise<{ uri: string; mimeType: string } | null>
+
+const defaultDownloadImage: DownloadImpl = async (imageUrl) => {
   try {
     const { File, Paths } = require('expo-file-system') as typeof import('expo-file-system')
     const file = new File(Paths.cache, `og-${Date.now()}.jpg`)
@@ -86,10 +88,16 @@ async function downloadImage(imageUrl: string): Promise<{ uri: string; mimeType:
   }
 }
 
-export async function hydrateFromUrl(url: string): Promise<SharedContent | null> {
+export interface HydrateOptions {
+  fetchImpl?: typeof fetch
+  downloadImpl?: DownloadImpl
+}
+
+export async function hydrateFromUrl(url: string, options: HydrateOptions = {}): Promise<SharedContent | null> {
+  const { fetchImpl = fetch, downloadImpl = defaultDownloadImage } = options
   if (__DEV__) console.debug('[hydrate] fetching', url)
   try {
-    const res = await fetch(url, {
+    const res = await fetchImpl(url, {
       headers: {
         'User-Agent': BROWSER_UA,
         Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9',
@@ -117,7 +125,7 @@ export async function hydrateFromUrl(url: string): Promise<SharedContent | null>
     const text = parts.length ? parts.join('\n') : null
 
     const imageSource = displayUrl || ogImage || twitterImage
-    const image = imageSource ? await downloadImage(imageSource) : null
+    const image = imageSource ? await downloadImpl(imageSource) : null
     if (__DEV__) console.debug('[hydrate] image', { source: imageSource, ...image })
 
     if (!text && !image && !author) return null
