@@ -1,3 +1,5 @@
+import { reportError } from '../report-error';
+
 export function parseEventName(rawText: string): string | null {
   try {
     const separator = '\n---\n';
@@ -23,7 +25,8 @@ export function parseEventName(rawText: string): string | null {
     }
 
     return candidate.length > 100 ? candidate.slice(0, 100) : candidate;
-  } catch {
+  } catch (e) {
+    reportError('extract.parse', e, { parser: 'event-name' });
     return null;
   }
 }

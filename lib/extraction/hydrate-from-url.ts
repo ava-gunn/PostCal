@@ -1,3 +1,4 @@
+import { reportError } from '../report-error'
 import type { SharedContent } from './types'
 
 const BROWSER_UA =
@@ -81,7 +82,8 @@ async function downloadImage(imageUrl: string): Promise<{ uri: string; mimeType:
     const file = new File(Paths.cache, `og-${Date.now()}.jpg`)
     const downloaded = await File.downloadFileAsync(imageUrl, file)
     return { uri: downloaded.uri, mimeType: 'image/jpeg' }
-  } catch {
+  } catch (e) {
+    reportError('extract.url', e, { imageUrl, step: 'downloadImage' })
     return null
   }
 }
@@ -130,6 +132,7 @@ export async function hydrateFromUrl(url: string): Promise<SharedContent | null>
     }
   } catch (e) {
     if (__DEV__) console.debug('[hydrate] error', e)
+    reportError('extract.url', e, { url })
     return null
   }
 }
