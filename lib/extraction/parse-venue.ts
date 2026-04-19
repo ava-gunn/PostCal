@@ -11,7 +11,7 @@ export function parseVenue(rawText: string): string | null {
     const atMatch = rawText.match(/\bat\s+([A-Z][^\n,]+)/);
     if (atMatch) {
       const trimmed = atMatch[1].trim();
-      if (trimmed) return trimmed;
+      if (trimmed && !/\S+@\S+/.test(trimmed)) return trimmed;
     }
 
     const atSymbolMatch = rawText.match(/(?<!\w)@\s+([^\n,]+)/);

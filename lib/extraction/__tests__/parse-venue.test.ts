@@ -36,6 +36,11 @@ describe('parseVenue', () => {
     expect(parseVenue(text)).toBeNull();
   });
 
+  it('does not match capitalized email addresses as venues', () => {
+    const text = 'Contact us at Info@example.com for tickets';
+    expect(parseVenue(text)).toBeNull();
+  });
+
   it('does not match social handles as venues', () => {
     const text = 'Follow @djsomeone on Instagram';
     expect(parseVenue(text)).toBeNull();

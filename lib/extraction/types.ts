@@ -5,20 +5,12 @@ export interface SharedContent {
   venueHint?: string | null;
 }
 
-export interface ExtractionConfidence {
-  eventName: number | null;
-  date: number | null;
-  time: number | null;
-  venue: number | null;
-}
-
 export interface ExtractionResult {
   eventName: string | null;
   date: string | null;        // ISO 8601: YYYY-MM-DD
   time: string | null;        // 24h format: HH:MM
   venue: string | null;
   rawText: string | null;
-  confidence: ExtractionConfidence;
 }
 
 export interface CalendarEvent {

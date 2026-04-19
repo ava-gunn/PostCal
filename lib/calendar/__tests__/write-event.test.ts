@@ -20,7 +20,6 @@ const fullExtraction: ExtractionResult = {
   time: '22:00',
   venue: 'The Warehouse, 450 Main St',
   rawText: 'DJ Night this Saturday...',
-  confidence: { eventName: 0.9, date: 0.95, time: 0.9, venue: 0.8 },
 };
 
 describe('buildCalendarEvent', () => {
