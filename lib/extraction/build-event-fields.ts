@@ -15,11 +15,5 @@ export function buildEventFields(fields: ParsedFields): ExtractionResult {
     time: fields.time,
     venue: fields.venue,
     rawText: fields.rawText,
-    confidence: {
-      eventName: fields.eventName !== null ? 1 : null,
-      date: fields.date !== null ? 1 : null,
-      time: fields.time !== null ? 1 : null,
-      venue: fields.venue !== null ? 1 : null,
-    },
   };
 }

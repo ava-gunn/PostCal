@@ -39,9 +39,6 @@ describe('runPipeline', () => {
     expect(result.time).toBe('22:00');
     expect(result.rawText).toContain('Summer Music Festival');
     expect(result.rawText).toContain('---');
-    expect(result.confidence.eventName).toBe(1);
-    expect(result.confidence.date).toBe(1);
-    expect(result.confidence.time).toBe(1);
   });
 
   it('extracts from text only when no image provided', async () => {
@@ -73,7 +70,6 @@ describe('runPipeline', () => {
     expect(result.time).toBeNull();
     expect(result.venue).toBeNull();
     expect(result.rawText).toBeNull();
-    expect(result.confidence.eventName).toBeNull();
   });
 
   it('still extracts from text when OCR fails', async () => {

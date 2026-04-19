@@ -1,15 +1,38 @@
 import * as chrono from 'chrono-node';
 import { reportError } from '../report-error';
 
+type ParsedResult = ReturnType<typeof chrono.parse>[number];
+
+const COMPONENTS = ['year', 'month', 'day', 'weekday', 'hour', 'minute'] as const;
+
+function specificity(result: ParsedResult): number {
+  let score = 0;
+  for (const c of COMPONENTS) {
+    if (result.start.isCertain(c)) score += 1;
+  }
+  if (result.start.isCertain('hour')) score += 10;
+  return score;
+}
+
+export function pickBestResult(results: ParsedResult[]): ParsedResult | null {
+  if (results.length === 0) return null;
+  return results.reduce((best, r) => {
+    const bScore = specificity(best);
+    const rScore = specificity(r);
+    if (rScore > bScore) return r;
+    if (rScore === bScore && r.index >= best.index) return r;
+    return best;
+  });
+}
+
 export function parseDateTime(rawText: string): { date: string | null; time: string | null } {
   try {
     const results = chrono.parse(rawText);
+    const result = pickBestResult(results);
 
-    if (results.length === 0) {
+    if (!result) {
       return { date: null, time: null };
     }
-
-    const result = results[0];
 
     const year = result.start.get('year');
     const month = result.start.get('month');

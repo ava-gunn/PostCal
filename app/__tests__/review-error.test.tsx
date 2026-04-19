@@ -87,7 +87,6 @@ describe('isExtractionFailure', () => {
       time: null,
       venue: null,
       rawText: null,
-      confidence: { eventName: null, date: null, time: null, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(true);
   });
@@ -99,7 +98,6 @@ describe('isExtractionFailure', () => {
       time: null,
       venue: null,
       rawText: null,
-      confidence: { eventName: 0.8, date: null, time: null, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(false);
   });
@@ -111,7 +109,6 @@ describe('isExtractionFailure', () => {
       time: null,
       venue: null,
       rawText: null,
-      confidence: { eventName: null, date: 0.9, time: null, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(false);
   });
@@ -123,7 +120,6 @@ describe('isExtractionFailure', () => {
       time: '20:00',
       venue: null,
       rawText: null,
-      confidence: { eventName: null, date: null, time: 0.9, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(false);
   });
@@ -135,7 +131,6 @@ describe('isExtractionFailure', () => {
       time: null,
       venue: 'The Warehouse',
       rawText: null,
-      confidence: { eventName: null, date: null, time: null, venue: 0.7 },
     };
     expect(isExtractionFailure(result)).toBe(false);
   });
@@ -147,7 +142,6 @@ describe('isExtractionFailure', () => {
       time: null,
       venue: null,
       rawText: 'Some extracted text from the post',
-      confidence: { eventName: null, date: null, time: null, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(false);
   });
@@ -159,7 +153,6 @@ describe('isExtractionFailure', () => {
       time: null,
       venue: null,
       rawText: null,
-      confidence: { eventName: 0.9, date: 0.8, time: null, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(false);
   });
@@ -171,7 +164,6 @@ describe('isExtractionFailure', () => {
       time: '',
       venue: '',
       rawText: '',
-      confidence: { eventName: null, date: null, time: null, venue: null },
     };
     expect(isExtractionFailure(result)).toBe(true);
   });

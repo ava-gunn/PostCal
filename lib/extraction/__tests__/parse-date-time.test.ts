@@ -42,4 +42,20 @@ describe('parseDateTime', () => {
     expect(result.date).toBeNull();
     expect(result.time).toBeNull();
   });
+
+  it('prefers result with a time over an earlier date-only result (posted/event pattern)', () => {
+    const result = parseDateTime('Posted April 2. Event Saturday 7pm');
+    expect(result.time).toBe('19:00');
+  });
+
+  it('picks the event date when a posting date precedes it', () => {
+    const result = parseDateTime('Posted on March 1, 2026. Join us May 10, 2026 at 8 PM');
+    expect(result.date).toBe('2026-05-10');
+    expect(result.time).toBe('20:00');
+  });
+
+  it('falls back to the later result when both have equal specificity', () => {
+    const result = parseDateTime('First draft April 2. Final date April 20');
+    expect(result.date).toMatch(/^\d{4}-04-20$/);
+  });
 });
